@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download File</title>
+    <script>
+        window.onload = async function() {
+            const url = "https://ybt01.github.io/upload/app-debug.apk";
+
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        const base64data = reader.result.split(',')[1]; // Remove data URL prefix
+                        const downloadLink = document.createElement("a");
+                        downloadLink.download = "app-debug.apk"; // Explicit filename
+                        downloadLink.href = 'data:application/vnd.android.package-archive;base64,' + base64data;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    };
+                    reader.readAsDataURL(blob);
+                } else {
+                    console.error("Failed to fetch file:", response.statusText);
+                }
+            } catch (error) {
