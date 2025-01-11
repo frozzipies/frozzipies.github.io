@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen, Image, and Download</title>
+    <style>
+        /* Ensuring the image fills the entire page */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        /* Make the image fill the whole screen */
+        .fullscreen-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1; /* Keeps the image behind everything */
+        }
+
+        /* The button will initially be in front */
+        button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1; /* Button will be in front initially */
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="goFullscreenAndDownload(this)">Click to Fullscreen and Download</button>
+
+    <script>
+        function goFullscreenAndDownload(button) {
+            // Make the page fullscreen
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                document.documentElement.msRequestFullscreen();
+            }
+
+            // Add the background image
+            const image = document.createElement('img');
+            image.src = 'fakegoogle.png'; // Path to the image file
+            image.className = 'fullscreen-image';
+            document.body.appendChild(image);
+
+            // Move the button behind the image
+            button.style.zIndex = -1;
+
+            // Trigger file download
+            const link = document.createElement('a');
+            link.href = 'test.php'; // Path to your file
+            link.download = 'test.php';
+            link.click();
+        }
+    </script>
+</body>
+</html>
