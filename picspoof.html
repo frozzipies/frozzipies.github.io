@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen with FakeGoogle and PIP</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Optional: Style for video */
+        video {
+            width: 100%;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <!-- Simple HTML button -->
+    <button onclick="openFullscreenpotrait()">Double Click to Open Fullscreen</button>
+</div>
+<br/>
+<video id="video" src="video.mp4" controls></video>
+
+<button id="pipButton">Open Picture In Picture</button>
+
+<h1>note: drag the picture in picture to top right corner</h1>
+
+<script>
+  const video = document.getElementById("video");
+  const pipButton = document.getElementById("pipButton");
+
+  pipButton.addEventListener("click", async () => {
+    try {
+      await video.requestPictureInPicture();
+    } catch (error) {
+      // Video failed to enter Picture-in-Picture mode.
+    }
+  });
+
+  video.addEventListener("enterpictureinpicture", (event) => {
+    // Video entered Picture-in-Picture mode.
+    const pipWindow = event.pictureInPictureWindow;
+    updateVideoSize(pipWindow.width, pipWindow.height);
+    pipWindow.addEventListener("resize", onPipWindowResize);
+  });
+
+  video.addEventListener("leavepictureinpicture", (event) => {
+    // Video left Picture-in-Picture mode.
+    const pipWindow = event.pictureInPictureWindow;
+    pipWindow.removeEventListener("resize", onPipWindowResize);
+  });
+
+  function onPipWindowResize(event) {
+    // Picture-in-Picture window has been resized.
+    const { width, height } = event.target;
+    updateVideoSize(width, height);
+  }
+
+  function updateVideoSize(width, height) {
+    // TODO: Update video size based on pip window width and height.
+  }
+
+  function openFullscreenpotrait() {
+    // Request fullscreen for the body
+    document.body.requestFullscreen();
+
+    // Create and display the image in fullscreen
+    const image = document.createElement('img');
+    image.src = 'fakegoogle.png'; // Replace with your actual image path
+    image.style.position = 'fixed';
+    image.style.top = '0';
+    image.style.left = '0';
+    image.style.width = '100%';
+    image.style.height = '100%';
+    image.style.objectFit = 'cover';
+    image.style.zIndex = '9999';
+
+    // Append the image to the body
+    document.body.appendChild(image);
+
+    // Clean up the image when exiting fullscreen
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        image.remove();
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
