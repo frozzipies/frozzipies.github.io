@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Image in Fullscreen</title>
+</head>
+<body>
+
+<button onclick="openImageInFullscreen()">Open Image in Fullscreen</button>
+
+<script>
+    function openImageInFullscreen() {
+        // Request fullscreen for the body
+        document.body.requestFullscreen().catch(err => console.log(err));
+
+        // Create and display the image in fullscreen
+        const image = document.createElement('img');
+        image.src = 'fakegoogle1.png'; // Replace with your actual image path
+        image.style.position = 'fixed';
+        image.style.top = '0';
+        image.style.left = '0';
+        image.style.width = '100vw'; // Full viewport width
+        image.style.height = '100vh'; // Full viewport height
+        image.style.objectFit = 'cover'; // Ensures the image covers the screen
+        image.style.zIndex = '9999'; // Ensure image stays on top
+        document.body.appendChild(image);
+
+        // Clean up the image when exiting fullscreen
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                image.remove();
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
