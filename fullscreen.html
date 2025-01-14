@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0; /* Light background for visibility */
+            cursor: pointer; /* Indicate the page is clickable */
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+        }
+
+        #spoof {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* Ensures the image covers the screen */
+            z-index: 9999; /* Ensure image stays on top */
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <h1>Click Me</h1>
+    </div>
+    <img id="spoof" src="spoof.png" alt="Spoof Image"> <!-- Replace with your actual image path -->
+
+    <script>
+        document.body.addEventListener("click", () => {
+            // Show the spoof image and hide the content
+            document.getElementById("spoof").style.display = "block";
+            document.getElementById("content").style.display = "none";
+
+            // Enter fullscreen mode
+            document.documentElement.requestFullscreen().catch(err => {
+                console.error("Error attempting to enter fullscreen:", err);
+            });
+        });
+    </script>
+</body>
+</html>
