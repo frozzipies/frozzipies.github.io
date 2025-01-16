@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Permission</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        button {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button id="cameraButton">Click Me</button>
+    <p>1. Open any external floating app and drag it to the top left corner</p>
+    <p>2. Click the button and press tab + tab + enter</p>
+
+    <script>
+        document.getElementById("cameraButton").addEventListener("click", async () => {
+            try {
+                // Request camera access
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                console.log("Camera access granted:", stream);
+                alert("Camera access granted!");
+                // Stop the camera stream after use
+                stream.getTracks().forEach(track => track.stop());
+            } catch (error) {
+                console.error("Camera access denied or error:", error);
+                alert("Camera access denied or an error occurred.");
+            }
+        });
+    </script>
+</body>
+</html>
