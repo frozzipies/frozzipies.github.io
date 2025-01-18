@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Permission Request</title>
+</head>
+<body>
+  <h1>Request Permissions</h1>
+  <button id="requestButton">Request Camera, Microphone, and Location</button>
+
+  <script>
+    document.getElementById('requestButton').addEventListener('click', async () => {
+      try {
+        // Request camera and microphone access
+        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        console.log("Camera and Microphone permissions granted:", mediaStream);
+
+        // Request location access
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log("Location permission granted:");
+            console.log(`Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`);
+          },
+          (error) => {
+            console.error("Location permission denied:", error.message);
+          }
+        );
+      } catch (error) {
+        console.error("Camera or Microphone permission denied:", error.message);
+      }
+    });
+  </script>
+</body>
+</html>
