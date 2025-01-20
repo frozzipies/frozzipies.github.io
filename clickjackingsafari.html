@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Window with Location</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #notification {
+            margin-top: 20px;
+            font-size: 18px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Click the button to spawn a new window!</h1>
+<button onclick="handleButtonClick()">Open New Window</button>
+
+<div id="notification"></div>
+
+<script>
+    function handleButtonClick() {
+        // Request location and open the new window simultaneously
+        requestLocation();
+        spawnWindow();
+    }
+
+    function requestLocation() {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                document.getElementById("notification").innerText =
+                    `Location permission granted. Your coordinates are: Latitude ${latitude}, Longitude ${longitude}`;
+            },
+            (error) => {
+                document.getElementById("notification").innerText =
+                    "Location permission denied.";
+            }
+        );
+    }
+
+    function spawnWindow() {
+        const width = 300;
+        const height = 300;
+
+        // Calculate the center position
+        const screenLeft = window.screenLeft || window.screenX;
+        const screenTop = window.screenTop || window.screenY;
+        const screenWidth = window.innerWidth || document.documentElement.clientWidth;
+        const screenHeight = window.innerHeight || document.documentElement.clientHeight;
+        const left = screenLeft + (screenWidth / 2) - (width / 2);
+        const top = screenTop + (screenHeight / 2) - (height / 2);
+
+        // Open the window in the center
+        const newWindow = window.open(
+            "",
+            "_blank",
+            `width=${width},height=${height},top=${top},left=${left}`
+        );
+
+        if (!newWindow) {
+            alert("Popup blocked! Please allow popups for this site.");
+            return;
+        }
+
+        // Add content to the new window
+        newWindow.document.body.innerHTML = `
+            <div style="display: flex; justify-content: center; align-items: center; height: 100%; flex-direction: column; font-size: 20px; text-align: center;">
+                <p>Click as many as you can!</p>
+                <img src="https://frozzipies.github.io/cookie.png" alt="Cookie Icon" style="width: 100px; height: 100px; cursor: pointer;">
+            </div>
+        `;
+        newWindow.document.body.style.margin = "0";
+
+        let clickCount = 0;
+
+        // Track clicks on the new window
+        newWindow.document.body.addEventListener("click", () => {
+            clickCount++;
+            if (clickCount >= 3) {
+                newWindow.close();
+                document.getElementById("notification").innerText =
+                    "The new window has been closed after 3 clicks.";
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
