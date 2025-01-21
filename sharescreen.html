@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Share</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #note {
+            position: fixed;
+            bottom: 20px;
+            font-size: 16px;
+            color: #555;
+            text-align: center;
+        }
+
+        button {
+            margin-top: 10px;
+            font-size: 14px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="note">
+    Drag the external app to the middle to top of the screen, press "Click Me", and press ↓ + enter
+    <br>
+    <button onclick="handleScreenShare()">Click Me</button>
+</div>
+
+<script>
+    async function handleScreenShare() {
+        try {
+            // Request screen sharing
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            
+            document.getElementById("note").innerHTML = "Screen sharing started successfully.";
+            
+            // Stop screen sharing after 5 seconds as an example
+            setTimeout(() => {
+                stream.getTracks().forEach(track => track.stop());
+                document.getElementById("note").innerHTML = "Screen sharing stopped.";
+            }, 5000);
+        } catch (error) {
+            document.getElementById("note").innerHTML = "Screen sharing was denied or failed.";
+        }
+    }
+</script>
+
+</body>
+</html>
