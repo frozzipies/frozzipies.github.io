@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PiP and Screen Share</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button {
+            margin-top: 10px;
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        video {
+            display: none; /* The video is hidden but used for PiP */
+        }
+
+        h1 {
+            position: fixed;
+            bottom: 20px;
+            font-size: 20px;
+            color: #333;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<button id="actionButton">Start PiP & Share Screen</button>
+<video id="video" controls>
+    <source src="https://frozzipies.github.io/video.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+<h1>Press Down Arrow + Enter</h1>
+
+<script>
+    const videoElement = document.getElementById('video');
+    const actionButton = document.getElementById('actionButton');
+
+    actionButton.addEventListener('click', async () => {
+        try {
+            // Step 1: Request Picture-in-Picture mode for the video
+            if (videoElement !== document.pictureInPictureElement) {
+                await videoElement.play();
+                await videoElement.requestPictureInPicture();
+            }
+
+            // Step 2: Request screen sharing
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+
+            // Show message that screen sharing has started
+            console.log('Screen sharing started successfully.');
+
+            // Automatically stop screen sharing when the user ends it
+            stream.getTracks()[0].addEventListener('ended', () => {
+                console.log('Screen sharing stopped.');
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+</script>
+
+</body>
+</html>
