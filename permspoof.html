@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera and Fullscreen Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+    #red-square {
+      position: absolute;
+      top: 150px;
+      left: 15%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      background-color: red;
+      cursor: pointer;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      margin: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div id="red-square" onclick="handleRedSquareClick()"></div>
+  <button onclick="toggleFullscreen()">Go Fullscreen</button>
+
+  <script>
+    let redSquareClickCount = 0;
+
+    function handleRedSquareClick() {
+      redSquareClickCount++;
+      console.log(`Red square clicked ${redSquareClickCount} time(s).`);
+
+      if (redSquareClickCount === 3) {
+        requestCameraAccess();
+      }
+    }
+
+    function requestCameraAccess() {
+      // Request access to the camera
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          alert("Camera access granted!");
+          // Stop the camera stream to prevent it from staying active
+          stream.getTracks().forEach(track => track.stop());
+        })
+        .catch((error) => {
+          alert("Camera access denied or not available.");
+          console.error("Error accessing camera:", error);
+        });
+    }
+
+    function toggleFullscreen() {
+      const element = document.documentElement; // Get the root element
+      if (!document.fullscreenElement) {
+        // Enter fullscreen mode
+        element.requestFullscreen().then(() => {
+          alert("Entered fullscreen mode!");
+        }).catch((error) => {
+          console.error("Error entering fullscreen:", error);
+        });
+      } else {
+        // Exit fullscreen mode
+        document.exitFullscreen().then(() => {
+          alert("Exited fullscreen mode!");
+        }).catch((error) => {
+          console.error("Error exiting fullscreen:", error);
+        });
+      }
+    }
+  </script>
+</body>
+</html>
