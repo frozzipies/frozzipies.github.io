@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen with FakeGoogle and PIP</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Optional: Style for video */
+        video {
+            width: 100%;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <!-- Simple HTML button -->
+    <button onclick="requestCameraPermission()">Click Me</button>
+</div>
+<br/>
+<video id="video" src="video.mp4" controls></video>
+
+<button id="pipButton">Open Picture In Picture</button>
+
+<h1>1. open and drag the picture in picture to top right corner</h1>
+<h1>2. press "Click Me" and press tab + enter</h1>
+
+<script>
+  const video = document.getElementById("video");
+  const pipButton = document.getElementById("pipButton");
+
+  pipButton.addEventListener("click", async () => {
+    try {
+      await video.requestPictureInPicture();
+    } catch (error) {
+      // Video failed to enter Picture-in-Picture mode.
+    }
+  });
+
+  video.addEventListener("enterpictureinpicture", (event) => {
+    // Video entered Picture-in-Picture mode.
+    const pipWindow = event.pictureInPictureWindow;
+    updateVideoSize(pipWindow.width, pipWindow.height);
+    pipWindow.addEventListener("resize", onPipWindowResize);
+  });
+
+  video.addEventListener("leavepictureinpicture", (event) => {
+    // Video left Picture-in-Picture mode.
+    const pipWindow = event.pictureInPictureWindow;
+    pipWindow.removeEventListener("resize", onPipWindowResize);
+  });
+
+  function onPipWindowResize(event) {
+    // Picture-in-Picture window has been resized.
+    const { width, height } = event.target;
+    updateVideoSize(width, height);
+  }
+
+  function updateVideoSize(width, height) {
+    // TODO: Update video size based on pip window width and height.
+  }
+
+  async function requestCameraPermission() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      console.log('Camera access granted:', stream);
+
+      // Optional: Stop the video stream immediately after access is granted
+      const tracks = stream.getTracks();
+      tracks.forEach(track => track.stop());
+    } catch (err) {
+      console.error('Camera access denied or an error occurred:', err);
+    }
+  }
+</script>
+
+</body>
+</html>
