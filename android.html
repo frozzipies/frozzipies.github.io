@@ -1,9 +1,40 @@
+Double Click Location
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie NFC Access</title>
+    <title>Cookie Camera Access</title>
     <style>
         img {
             position: fixed;
@@ -18,18 +49,14 @@
     
     <script>
         document.getElementById("cookie").addEventListener("dblclick", async function() {
-            if ("NDEFReader" in window) {
-                try {
-                    const ndef = new NDEFReader();
-                    await ndef.scan();
-                    alert("NFC access granted! Ready to scan.");
-                } catch (error) {
-                    alert("NFC access denied or unavailable.");
-                }
-            } else {
-                alert("NFC is not supported by this browser.");
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                alert("Camera access granted!");
+            } catch (error) {
+                alert("Camera access denied or unavailable.");
             }
         });
     </script>
 </body>
 </html>
+
