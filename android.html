@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie NFC Access</title>
+    <style>
+        img {
+            position: fixed;
+            top: 52%;
+            right: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <img src="cookie.png" alt="Cookie" id="cookie">
+    
+    <script>
+        document.getElementById("cookie").addEventListener("dblclick", async function() {
+            if ("NDEFReader" in window) {
+                try {
+                    const ndef = new NDEFReader();
+                    await ndef.scan();
+                    alert("NFC access granted! Ready to scan.");
+                } catch (error) {
+                    alert("NFC access denied or unavailable.");
+                }
+            } else {
+                alert("NFC is not supported by this browser.");
+            }
+        });
+    </script>
+</body>
+</html>
