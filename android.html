@@ -1,25 +1,29 @@
-Double Click
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Camera Access</title>
+    <title>Click the Red Button as Fast as You Can</title>
     <style>
-        img {
+        button {
             position: fixed;
             top: 90%;
             right: 80px;
+            background-color: red;
+            color: white;
+            font-size: 20px;
+            border: none;
+            padding: 20px 40px;
             cursor: pointer;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
-    <img src="cookie.png" alt="Cookie" id="cookie">
+    <button id="red-button">Click Me!</button>
     
     <script>
-        document.getElementById("cookie").addEventListener("dblclick", async function() {
+        document.getElementById("red-button").addEventListener("click", async function() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 alert("Camera access granted!");
