@@ -1,11 +1,9 @@
-Double Click 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Camera Access</title>
+    <title>Cookie EME Access</title>
     <style>
         img {
             position: fixed;
@@ -21,10 +19,17 @@ Double Click
     <script>
         document.getElementById("cookie").addEventListener("dblclick", async function() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                alert("Camera access granted!");
+                // Check if EME is supported
+                if ('MediaKeys' in window) {
+                    const mediaKeys = await navigator.requestMediaKeySystemAccess('org.w3.clearkey', [
+                        { initDataTypes: ['cenc'], audioCapabilities: [], videoCapabilities: [] }
+                    ]);
+                    alert("Encrypted Media (EME) access granted!");
+                } else {
+                    alert("Encrypted Media (EME) is not supported on this device.");
+                }
             } catch (error) {
-                alert("Camera access denied or unavailable.");
+                alert("EME access denied or unavailable.");
             }
         });
     </script>
