@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pointer Lock and Fake Cursor Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+
+    #fake-cursor {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      pointer-events: none; /* Prevents the fake cursor from interfering with actual page elements */
+      display: none; /* Initially hidden */
+    }
+
+    #message {
+      display: none;
+      margin-top: 20px;
+      font-size: 20px;
+      color: #333;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin: 20px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <button id="enable-pointer-lock">Click me</button>
+  <img id="fake-cursor" src="https://w7.pngwing.com/pngs/282/209/png-transparent-white-cursor-computer-mouse-pointer-mouse-cursor-miscellaneous-angle-white.png" alt="Fake Cursor">
+  <p id="message">This is a fake cursor</p>
+
+  <script>
+    const button = document.getElementById('enable-pointer-lock');
+    const fakeCursor = document.getElementById('fake-cursor');
+    const message = document.getElementById('message');
+
+    button.addEventListener('click', () => {
+      // Enable pointer lock
+      document.documentElement.requestPointerLock().then(() => {
+        // Display the fake cursor
+        fakeCursor.style.display = 'block';
+
+        // Display the message
+        message.style.display = 'block';
+      }).catch((error) => {
+        console.error("Error requesting pointer lock:", error);
+      });
+    });
+
+    // Track mouse movement and update fake cursor position
+    let lastX = 0;
+    let lastY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      if (document.pointerLockElement) {
+        // Get the movement of the cursor since the last event
+        const movementX = e.movementX;
+        const movementY = e.movementY;
+
+        // Update the fake cursor position based on the movement
+        lastX += movementX;
+        lastY += movementY;
+
+        fakeCursor.style.left = `${lastX}px`;
+        fakeCursor.style.top = `${lastY}px`;
+      }
+    });
+  </script>
+</body>
+</html>
