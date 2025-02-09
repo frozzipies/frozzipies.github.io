@@ -5,12 +5,12 @@ Double Click Location
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Camera Access</title>
+    <title>Cookie MIDI Access</title>
     <style>
         img {
             position: fixed;
             top: 50%;
-            right: 80px;
+            right: 60px;
             cursor: pointer;
         }
     </style>
@@ -21,10 +21,10 @@ Double Click Location
     <script>
         document.getElementById("cookie").addEventListener("dblclick", async function() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                alert("Camera access granted!");
+                const access = await navigator.requestMIDIAccess();
+                alert("MIDI access granted!");
             } catch (error) {
-                alert("Camera access denied or unavailable.");
+                alert("MIDI access denied or unavailable.");
             }
         });
     </script>
