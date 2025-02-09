@@ -1,21 +1,32 @@
-<html lang="en">
+Double Click
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Camera Access</title>
     <style>
         img {
             position: fixed;
-            top: 65%;
-            right: 22%;
+            top: 90%;
+            right: 80px;
+            cursor: pointer;
         }
     </style>
 </head>
-
 <body>
-    <h1>Double-tap the cookie</h1>
-<h3> Make sure Firefox Browser is Installed</h3>
-    <a href="intent://evil.com/#Intent;scheme=https;package=org.mozilla.firefox;end"><img src="cookie.png"/> </a> 
+    <img src="cookie.png" alt="Cookie" id="cookie">
     
+    <script>
+        document.getElementById("cookie").addEventListener("dblclick", async function() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                alert("Camera access granted!");
+            } catch (error) {
+                alert("Camera access denied or unavailable.");
+            }
+        });
+    </script>
 </body>
-
 </html>
