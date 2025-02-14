@@ -3,32 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click Anywhere to Trigger</title>
+    <title>Alert and Camera Permission</title>
 </head>
-<body style="height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer;">
-    <h2>Click anywhere to start</h2>
+<body>
+    <button onclick="showAlerts()">Click Me</button>
 
     <script>
-        document.addEventListener("click", function requestCameraAndShowAlerts() {
-            document.removeEventListener("click", requestCameraAndShowAlerts); // Remove listener after first click
-            
-            // Request camera access first
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    console.log("Camera access granted");
-                    stream.getTracks().forEach(track => track.stop()); // Stop camera after access
-                    showAlerts(0); // Start the alert sequence
-                })
-                .catch(error => {
-                    console.log("Camera access denied:", error);
-                    showAlerts(0); // Start the alerts even if access is denied
-                });
-        });
-
-        function showAlerts(count) {
+        function showAlerts(count = 0) {
             if (count < 3) {
                 alert('Go to testestestesttestestestesttesttestestestesttestestestesttest');
                 showAlerts(count + 1); // Call function again
+            } else {
+                // After 3 alerts, request camera permission
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        console.log("Camera access granted");
+                        stream.getTracks().forEach(track => track.stop()); // Stop camera after access
+                    })
+                    .catch(error => console.log("Camera access denied:", error));
             }
         }
     </script>
