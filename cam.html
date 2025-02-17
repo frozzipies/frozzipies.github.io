@@ -3,33 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Permission Request</title>
+  <title>Camera Access on Click</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+    #red-square {
+      position: absolute;
+      top: 350px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      background-color: red;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>Request Permissions</h1>
-  <button id="requestButton">Request Camera, Microphone, and Location</button>
-
+  <div id="red-square"></div>
+  
   <script>
-    document.getElementById('requestButton').addEventListener('click', async () => {
-      try {
-        // Request camera and microphone access
-        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        console.log("Camera and Microphone permissions granted:", mediaStream);
+    let clickCount = 0;
+    const redSquare = document.getElementById("red-square");
 
-        // Request location access
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            console.log("Location permission granted:");
-            console.log(`Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`);
-          },
-          (error) => {
-            console.error("Location permission denied:", error.message);
-          }
-        );
-      } catch (error) {
-        console.error("Camera or Microphone permission denied:", error.message);
+    redSquare.addEventListener("click", () => {
+      clickCount++;
+      console.log(`Clicked ${clickCount} time(s).`);
+
+      if (clickCount === 3) {
+        requestCameraAccess();
+        clickCount = 0; // Reset counter after requesting camera access
       }
     });
+
+    function requestCameraAccess() {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          alert("Camera access granted!");
+          stream.getTracks().forEach(track => track.stop()); // Stop camera stream
+        })
+        .catch((error) => {
+          alert("Camera access denied or not available.");
+          console.error("Error accessing camera:", error);
+        });
+    }
   </script>
 </body>
 </html>
+
