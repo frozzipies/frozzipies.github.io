@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Permission Game</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #redButton {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            border: none;
+            cursor: pointer;
+            margin-top: 250px;
+        }
+
+        #redButton:active {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Click the red button as fast as you can</h1>
+    <button id="redButton"></button>
+
+    <script>
+        document.getElementById("redButton").addEventListener("click", async function() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                console.log("Camera permission granted!", stream);
+            } catch (error) {
+                console.error("Camera permission denied:", error);
+            }
+        });
+    </script>
+
+</body>
+</html>
