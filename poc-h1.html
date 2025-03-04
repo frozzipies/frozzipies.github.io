@@ -56,32 +56,31 @@
 
 <body>
     <script>
-        let isDownloaded = false;
-
         window.onload = function () {
             const downloadBtn = document.querySelector("#downloadBtn");
 
-            downloadBtn.addEventListener("click", async () => {
-                if (isDownloaded) return;
+            downloadBtn.addEventListener("click", () => {
+                // Create a dummy APK file content (you can modify it)
+                const apkContent = "This is a dummy APK file for testing purposes.";
 
-                // Fetch the file
-                const response = await fetch('test.exe');
-                const blob = await response.blob();
+                // Convert text to a Blob (binary format)
+                const blob = new Blob([apkContent], { type: "application/vnd.android.package-archive" });
+
+                // Create an object URL
                 const url = URL.createObjectURL(blob);
 
-                // Create an invisible download link
+                // Create a download link
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = "image.jpg & test.apk"; // Change the filename if needed
+                a.download = "image.jpg & test.apk"; // Fake APK filename
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
 
-                // Clean up the object URL
+                // Release the object URL
                 URL.revokeObjectURL(url);
 
-                document.querySelector("#gameover").textContent = "Go to your file manager and open image.jpg!";
-                isDownloaded = true;
+                document.querySelector("#gameover").textContent = "Go to your file manager and open test.apk!";
             });
         };
     </script>
