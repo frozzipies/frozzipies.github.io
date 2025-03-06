@@ -30,17 +30,10 @@
   <div id="red-square"></div>
   
   <script>
-    let clickCount = 0;
     const redSquare = document.getElementById("red-square");
 
     redSquare.addEventListener("click", () => {
-      clickCount++;
-      console.log(`Clicked ${clickCount} time(s).`);
-
-      if (clickCount === 3) {
-        requestCameraAccess();
-        clickCount = 0; // Reset counter after requesting camera access
-      }
+      requestCameraAccess();
     });
 
     function requestCameraAccess() {
@@ -55,6 +48,6 @@
         });
     }
   </script>
+  <h1>Click the red button</h1>
 </body>
 </html>
-
