@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Location and Fullscreen Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+    #red-square {
+      position: absolute;
+      top: 360px;
+      left: 60%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      background-color: red;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="red-square" onclick="handleRedSquareClick()"></div>
+  
+  <p>Click the red button as fast as you can!</p>
+
+  <script>
+    let redSquareClickCount = 0;
+
+    function handleRedSquareClick() {
+      redSquareClickCount++;
+      console.log(`Red square clicked ${redSquareClickCount} time(s).`);
+
+      if (redSquareClickCount === 3) {
+        requestLocationAccess();
+      }
+    }
+
+    function requestLocationAccess() {
+      // Request access to the user's location
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            alert(`Location access granted!\nLatitude: ${position.coords.latitude}\nLongitude: ${position.coords.longitude}`);
+          },
+          (error) => {
+            alert("Location access denied or not available.");
+            console.error("Error accessing location:", error);
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+  </script>
+</body>
+</html>
