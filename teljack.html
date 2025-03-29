@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Challenge</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .note {
+            font-size: 20px;
+            margin-bottom: auto;
+        }
+        .square {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            position: fixed;
+            top: 50%;
+            right: 750px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="note">Click the red button as fast as you can</div>
+    <div class="square" id="clickButton"></div>
+
+    <script>
+        let clickCount = 0;
+        const button = document.getElementById("clickButton");
+
+        button.addEventListener("click", function() {
+            clickCount++;
+            if (clickCount >= 3) {
+                window.location.href = "tel:123456789";
+                clickCount = 0; // Reset counter
+            }
+        });
+    </script>
+
+</body>
+</html>
