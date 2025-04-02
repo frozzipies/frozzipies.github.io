@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Autofill Form with PiP Video</title>
+    <script>
+        function showVideoInPiP() {
+            const videoElement = document.getElementById('video');
+            if (videoElement !== null && videoElement.requestPictureInPicture) {
+                // Make the video appear when the button is clicked
+                videoElement.style.display = "block";
+                videoElement.requestPictureInPicture()
+                    .catch(error => {
+                        console.error('Error occurred while entering Picture-in-Picture mode:', error);
+                    });
+            }
+        }
+
+        function updateEmailOutput() {
+            const emailInput = document.getElementById('emailInput').value;
+            const emailOutput = document.getElementById('emailOutput');
+
+            emailOutput.textContent = "\n\n\n\nemail: " + emailInput + " (GOT UR EMAIL!)";
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #emailOutput {
+            font-weight: bold;
+            color: green;
+            margin-top: 100px; /* Moves it down */
+            text-align: center; /* Centers it */
+            font-size: 20px;
+            white-space: pre-line; /* Ensures proper line breaks */
+        }
+
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .form-container {
+            position: absolute;
+            top: 80%; /* Moved a bit lower */
+            left: 30px; /* Middle-left */
+            transform: translateY(-50%);
+            text-align: left;
+        }
+
+        label, input, button {
+            margin: 10px 0;
+            display: block;
+        }
+
+        input[type="email"] {
+            padding: 8px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #video {
+            display: none;
+            width: 320px;
+            height: 240px;
+        }
+
+        /* Steps to Reproduce */
+        .steps-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <div id="emailOutput">email: </div>
+        <video id="video" controls>
+            <source src="https://github.com/frozzipies/frozzipies.github.io/raw/refs/heads/main/video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <div class="form-container">
+        <label for="emailInput">Press down + Enter</label>
+        <input type="email" id="emailInput" name="email" oninput="updateEmailOutput()" placeholder="CLICK ME!">
+        <button onclick="showVideoInPiP()">Verify</button>
+    </div>
+
+    <div class="steps-container">
+        <strong>Steps to Reproduce</strong>
+        <ol>
+            <li>Click verify (PiP) </li>
+            <li>Click the input form</li>
+            <li>Press down + click</li>
+        </ol>
+    </div>
+
+</body>
+</html>
