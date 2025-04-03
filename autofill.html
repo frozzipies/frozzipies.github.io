@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Input Form</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #1D1D1E; /* Set background color of the page */
+            color: white; /* Make text readable */
+            font-family: Arial, sans-serif;
+        }
+        .output {
+            font-size: 20px;
+            font-weight: bold;
+            color: #A8D08D; /* Light green for output text */
+            text-align: center;
+            margin-top: 20px;
+        }
+        .email-form {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #1D1D1E; /* Same background as page */
+            padding: 2px;
+            text-align: center;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .email-form input {
+            padding: 2px;
+            height: 5px;
+            width: 10px; /* Very small but still clickable */
+            max-width: 50px; /* Max width to keep it functional */
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 12px; /* Smaller font */
+            opacity: 0.1; /* Low opacity to make it barely visible */
+            background-color: #1D1D1E; /* Same background as page */
+            color: white; /* Make the text inside input readable */
+        }
+        .email-form input:focus {
+            outline: none;
+            opacity: 1; /* Full visibility when focused */
+            background-color: #333; /* Darker background when focused */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="output" id="emailOutput">
+        Please enter your email below.
+    </div>
+
+    <div class="email-form">
+        <input type="email" id="email" placeholder="Enter your email" required autofocus oninput="updateOutput()" onkeydown="submitOnEnter(event)">
+    </div>
+
+    <script>
+        function submitOnEnter(event) {
+            if (event.key === "Enter") {
+                var email = document.getElementById("email").value;
+                // You can process the email here if necessary
+            }
+        }
+
+        function updateOutput() {
+            var email = document.getElementById("email").value;
+            var output = document.getElementById("emailOutput");
+
+            if (email) {
+                output.textContent = email + " (EMAIL STEALED!)";
+            } else {
+                output.textContent = "Press down + enter";
+            }
+        }
+    </script>
+
+</body>
+</html>
