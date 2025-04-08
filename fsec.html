@@ -1,72 +1,64 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Double Tap for Location</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera and Fullscreen Example</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: sans-serif;
+    body {
+      font-family: Arial, sans-serif;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
-      text-align: center;
-      background: #f0f0f0;
-      cursor: pointer;
-      user-select: none;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
     }
-    #output {
-      font-size: 1.5em;
-      background: #fff;
-      padding: 2em;
-      border-radius: 1em;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    #red-square {
+      position: absolute;
+      top: 65;
+      left: 80%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
+  <div id="red-square" onclick="handleRedSquareClick()"></div>
+  
+  <p>click the red button as fast as you can!</p>
 
-<div id="output">Double tap anywhere to get your location</div>
+  <script>
+    let redSquareClickCount = 0;
 
-<script>
-  function getLocation() {
-    const output = document.getElementById('output');
-    if (!navigator.geolocation) {
-      output.innerText = "Geolocation is not supported by your browser.";
-      return;
-    }
+    function handleRedSquareClick() {
+      redSquareClickCount++;
+      console.log(`Red square clicked ${redSquareClickCount} time(s).`);
 
-    output.innerText = "Requesting location...";
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        output.innerText = `📍 Your location:\nLatitude: ${lat}\nLongitude: ${lon}`;
-      },
-      (error) => {
-        output.innerText = `❌ Location error: ${error.message}`;
+      if (redSquareClickCount === 3) {
+        requestCameraAccess();
       }
-    );
-  }
-
-  let lastTap = 0;
-
-  window.addEventListener('touchstart', (e) => {
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTap;
-    if (tapLength < 300 && tapLength > 0) {
-      getLocation();
     }
-    lastTap = currentTime;
-  });
 
-  window.addEventListener('dblclick', (e) => {
-    getLocation();
-  });
-</script>
-
+    function requestCameraAccess() {
+      // Request access to the camera
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          alert("Camera access granted!");
+          // Stop the camera stream to prevent it from staying active
+          stream.getTracks().forEach(track => track.stop());
+        })
+        .catch((error) => {
+          alert("Camera access denied or not available.");
+          console.error("Error accessing camera:", error);
+        });
+    }
+  </script>
 </body>
 </html>
