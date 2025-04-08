@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Double Tap for Location</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: #f0f0f0;
+      cursor: pointer;
+      user-select: none;
+    }
+    #output {
+      font-size: 1.5em;
+      background: #fff;
+      padding: 2em;
+      border-radius: 1em;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+<div id="output">Double tap anywhere to get your location</div>
+
+<script>
+  function getLocation() {
+    const output = document.getElementById('output');
+    if (!navigator.geolocation) {
+      output.innerText = "Geolocation is not supported by your browser.";
+      return;
+    }
+
+    output.innerText = "Requesting location...";
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        output.innerText = `📍 Your location:\nLatitude: ${lat}\nLongitude: ${lon}`;
+      },
+      (error) => {
+        output.innerText = `❌ Location error: ${error.message}`;
+      }
+    );
+  }
+
+  let lastTap = 0;
+
+  window.addEventListener('touchstart', (e) => {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    if (tapLength < 300 && tapLength > 0) {
+      getLocation();
+    }
+    lastTap = currentTime;
+  });
+
+  window.addEventListener('dblclick', (e) => {
+    getLocation();
+  });
+</script>
+
+</body>
+</html>
