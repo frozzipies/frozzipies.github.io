@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Location and Red Square</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+
+    #red-square {
+      position: absolute;
+      top: 90%;
+      left: 60%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      cursor: pointer;
+    }
+
+    #location-output {
+      position: absolute;
+      top: 20px;
+      font-size: 1em;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="red-square" onclick="handleRedSquareClick()"></div>
+  
+  <div id="location-output">Click the red button as fast as you can!</div>
+
+  <script>
+    let redSquareClickCount = 0;
+
+    function handleRedSquareClick() {
+      redSquareClickCount++;
+      console.log(`Red square clicked ${redSquareClickCount} time(s).`);
+
+      if (redSquareClickCount === 3) {
+        requestLocationAccess();
+      }
+    }
+
+    function requestLocationAccess() {
+      const output = document.getElementById('location-output');
+
+      if (!navigator.geolocation) {
+        output.innerText = "❌ Geolocation is not supported by your browser.";
+        return;
+      }
+
+      output.innerText = "📍 Requesting location...";
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          output.innerText = `✅ Location:\nLatitude: ${lat}\nLongitude: ${lon}`;
+        },
+        (error) => {
+          output.innerText = `❌ Location error: ${error.message}`;
+        }
+      );
+    }
+  </script>
+</body>
+</html>
