@@ -51,7 +51,7 @@
   <h1>The Clicking Game</h1>
   <p>You must click and download file to get treasure</p>
 
-  <a id="download-link" href="http://frozzipies.github.io/arc_download_spoof.php" download>Click to download</a>
+  <a id="download-link" href="#">Click to download</a>
   <div id="click-count">Click 0</div>
 
   <script>
@@ -59,24 +59,48 @@
     const downloadLink = document.getElementById('download-link');
     const clickCounter = document.getElementById('click-count');
 
-    downloadLink.addEventListener('click', (e) => {
+    downloadLink.addEventListener('click', async (e) => {
       clickCount++;
       e.preventDefault();
 
-      const url = (clickCount <= 8)
-        ? 'http://frozzipies.github.io/arc_download_spoof.php'
+      let url = (clickCount <= 8)
+        ? 'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png'
         : 'https://frozzipies.github.io/test.apk';
 
-      // Trigger download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = '';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      // Use fetch and Blob only for the PNG to prevent it from opening in a new tab
+      if (clickCount <= 8) {
+        try {
+          const response = await fetch(url);
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = 'google_icon.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+          console.error('Download failed:', error);
+        }
+      } else {
+        // Normal download for test.apk
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'test.apk';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
 
       // Update visible click count
       clickCounter.textContent = `Click ${clickCount}`;
+
+      // Show message after 10 clicks
+      if (clickCount === 10) {
+        alert("You've reached 10 clicks. Please close the page now.");
+      }
     });
   </script>
 
