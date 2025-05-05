@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fullscreen Image Viewer</title>
+  <style>
+    body, html {
+      margin: 0;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: white;
+      cursor: pointer;
+    }
+
+    #clickText {
+      font-size: 2rem;
+      color: black;
+    }
+
+    #imgContainer {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      background-color: black;
+    }
+
+    #fullscreenImage {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
+</head>
+<body onclick="openFullscreen()">
+  <div id="clickText">Click anywhere</div>
+
+  <div id="imgContainer">
+    <img id="fullscreenImage" src="arc-view.png" alt="arc-view" />
+  </div>
+
+  <script>
+    function openFullscreen() {
+      const imgContainer = document.getElementById("imgContainer");
+      imgContainer.style.display = "flex";
+
+      if (imgContainer.requestFullscreen) {
+        imgContainer.requestFullscreen();
+      } else if (imgContainer.webkitRequestFullscreen) {
+        imgContainer.webkitRequestFullscreen();
+      } else if (imgContainer.msRequestFullscreen) {
+        imgContainer.msRequestFullscreen();
+      }
+    }
+
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement) {
+        document.getElementById("imgContainer").style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
