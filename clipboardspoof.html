@@ -1,0 +1,121 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Clipboard Spoof</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: #fff;
+    }
+
+    #countdown {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .google-page {
+      display: none;
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    .google-logo {
+      width: 272px;
+      height: 92px;
+      background: url('https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png') no-repeat center;
+      background-size: contain;
+      margin: 0 auto 30px;
+    }
+
+    .search-box {
+      width: 50%;
+      max-width: 600px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: 1px solid #dcdcdc;
+      border-radius: 24px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    #result {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5em;
+      color: #000;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div id="countdown">5</div>
+
+<div class="google-page" id="fakeGoogle">
+  <div class="google-logo"></div>
+  <input type="text" class="search-box" placeholder="Search Google or type a URL" id="fakeSearch">
+</div>
+
+<div id="result"></div>
+
+<script>
+let clicked = false;
+
+window.onload = function () {
+  let count = 5;
+  const countdownElement = document.getElementById('countdown');
+  const fakeGoogle = document.getElementById('fakeGoogle');
+
+  const interval = setInterval(() => {
+    countdownElement.textContent = count;
+
+    if (count === 1) {
+      fakeGoogle.style.display = 'block';
+      document.getElementById('fakeSearch').focus();
+    }
+
+    if (count === 0) {
+      countdownElement.style.display = 'none';
+      clearInterval(interval);
+    }
+
+    count--;
+  }, 1000);
+};
+
+document.body.addEventListener('click', async () => {
+  if (!clicked) {
+    clicked = true;
+
+    try {
+      const text = await navigator.clipboard.readText();
+
+      // Hide all elements
+      document.getElementById('countdown').style.display = 'none';
+      document.getElementById('fakeGoogle').style.display = 'none';
+
+      // Show result
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerText = `YOUR CLIPBOARD: ${text || '(empty)'}`;
+      resultDiv.style.display = 'block';
+    } catch (err) {
+      alert('Clipboard access denied or unsupported.');
+    }
+  }
+});
+</script>
+
+</body>
+</html>
