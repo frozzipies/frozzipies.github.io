@@ -43,6 +43,25 @@
             width: 100vw;
             height: 100vh;
             object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        #extraElement {
+            display: none;
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            z-index: 2;
+            font-size: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -50,15 +69,19 @@
     <div id="container">
         <button id="spoofBtn">Enter Fullscreen & Show Image</button>
     </div>
+
     <img id="spoof" src="spoof.png" alt="Spoof Image">
+    <div id="extraElement">🔒 Secure Connection - Your data is protected</div>
 
     <script>
         document.getElementById('spoofBtn').addEventListener('click', async () => {
             const img = document.getElementById('spoof');
             const container = document.getElementById('container');
+            const extraElement = document.getElementById('extraElement');
 
             container.style.display = 'none';
             img.style.display = 'block';
+            extraElement.style.display = 'block';
 
             try {
                 await document.documentElement.requestFullscreen();
