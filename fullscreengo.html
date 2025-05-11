@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,29 +10,54 @@
             padding: 0;
             height: 100%;
             width: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #fff;
+            overflow: hidden;
         }
+
+        #container {
+            text-align: center;
+        }
+
+        #spoofBtn {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background-color: #ffffffcc;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #spoofBtn:hover {
+            background-color: #ffffffee;
+            transform: scale(1.05);
+        }
+
         #spoof {
             display: none;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             object-fit: cover;
         }
     </style>
 </head>
 <body>
-    <button id="spoofBtn">Click me!</button>
+    <div id="container">
+        <button id="spoofBtn">Enter Fullscreen & Show Image</button>
+    </div>
     <img id="spoof" src="spoof.png" alt="Spoof Image">
 
     <script>
         document.getElementById('spoofBtn').addEventListener('click', async () => {
             const img = document.getElementById('spoof');
-            const btn = document.getElementById('spoofBtn');
+            const container = document.getElementById('container');
 
-            btn.style.display = 'none';
+            container.style.display = 'none';
             img.style.display = 'block';
 
             try {
@@ -43,43 +67,5 @@
             }
         });
     </script>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </body>
 </html>
