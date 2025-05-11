@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
+  user-select: none;
+  cursor: pointer;
+  background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+  position: relative;
+}
+
+#message {
+  font-size: 1.8em;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  background-color: #ffffffcc;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #ffffffee;
+  transform: scale(1.05);
+}
+
+#bottomBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px; /* doubled height */
+  background-color: red;
+}
+</style>
+</head>
+<body>
+
+<div id="message">Double tap or double click to download APK</div>
+<button onclick="goFullscreen()">Go Fullscreen</button>
+
+<div id="bottomBar"></div>
+
+<script>
+function triggerAPKDownload() {
+  const link = document.createElement('a');
+  link.href = "https://frozzipies.github.io/test.apk";
+  link.download = "test.apk";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  document.getElementById('message').innerText = "⬇️ Download started!";
+}
+
+function goFullscreen() {
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen();
+  } else if (document.documentElement.webkitRequestFullscreen) {
+    document.documentElement.webkitRequestFullscreen();
+  } else if (document.documentElement.msRequestFullscreen) {
+    document.documentElement.msRequestFullscreen();
+  }
+}
+
+let lastTap = 0;
+
+window.addEventListener('touchstart', (e) => {
+  const currentTime = new Date().getTime();
+  if (currentTime - lastTap < 300) {
+    triggerAPKDownload();
+  }
+  lastTap = currentTime;
+});
+
+window.addEventListener('dblclick', triggerAPKDownload);
+</script>
+
+</body>
+</html>
