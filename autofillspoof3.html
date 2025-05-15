@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Autofill Form</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #emailOutput {
+      font-weight: bold;
+      color: green;
+      margin-top: 100px;
+      text-align: center;
+      font-size: 20px;
+      white-space: pre-line;
+    }
+
+    .content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .form-container {
+      position: fixed;
+      top: 10px;
+      left: 70%;
+      text-align: left;
+      background-color: white;
+      padding: 10px;
+      border-radius: 0;
+      box-shadow: none;
+      z-index: 9999;
+
+      opacity: 0;           /* Make invisible */
+      pointer-events: auto; /* Keep interactive */
+    }
+
+    label, input {
+      margin: 5px 0;
+      display: block;
+    }
+
+    input[type="email"] {
+      padding: 6px;
+      width: 250px;
+    }
+
+    .steps-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 16px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+
+  <script>
+    function updateEmailOutput() {
+      const emailInput = document.getElementById('emailInput').value;
+      const emailOutput = document.getElementById('emailOutput');
+      emailOutput.textContent = "\n\n\n\nemail: " + emailInput + " (GOT UR EMAIL!)";
+    }
+  </script>
+</head>
+<body>
+  <div class="content">
+    <div id="emailOutput">email: </div>
+  </div>
+
+  <div class="form-container">
+    <label for="emailInput">Press down + Enter</label>
+    <input type="email" id="emailInput" name="email" oninput="updateEmailOutput()" placeholder="CLICK ME!">
+  </div>
+
+  <div class="steps-container">
+    <strong>Steps to Reproduce</strong>
+    <ol>
+      <li>Capture the page using Arc feature</li>
+      <li>Press tab + down + click</li>
+    </ol>
+  </div>
+</body>
+</html>
