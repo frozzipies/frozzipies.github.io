@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Double Click the square</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+      position: relative;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .square {
+      width: 30px;
+      height: 30px;
+      background-color: red;
+      position: fixed;
+      bottom: 42%;
+      right: 38%;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Double-click the square to win the game</h1>
+
+  <div class="square"></div>
+
+  <script>
+    document.addEventListener('dblclick', function () {
+      window.open('https://glogoligatureoogle.com/', '_blank');
+    });
+  </script>
