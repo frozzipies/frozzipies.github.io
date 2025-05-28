@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Download and Redirect</title>
+</head>
+<body>
+  <button onclick="downloadAndRedirect()">Download and Redirect</button>
+
+  <script>
+    function downloadAndRedirect() {
+      // Still using a PNG file as the dummy content, but naming it as an APK
+      const dataUrl = 'data:application/octet-stream;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HwAF/wL+KnYz3wAAAABJRU5ErkJggg==';
+      const fileName = 'google.apk';
+
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = fileName;
+
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Redirect to Google
+      window.location.href = 'https://www.google.com';
+    }
+  </script>
+</body>
+</html>
