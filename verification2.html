@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wait or Click</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #eef;
+      font-family: sans-serif;
+      cursor: pointer;
+    }
+    #message {
+      font-size: 48px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div id="message">Open in sidebar and click the page inside the sidebar</div>
+
+  <script>
+    const message = document.getElementById('message');
+    let clicked = false;
+
+    // Redirect after 5 seconds if not clicked
+    const redirectTimeout = setTimeout(() => {
+      if (!clicked) {
+        window.location.href = 'https://www.microsoft.com';
+      }
+    }, 5000);
+
+    // Request fullscreen on click and update message
+    document.body.addEventListener('click', async () => {
+      if (!clicked) {
+        clicked = true;
+        clearTimeout(redirectTimeout);
+
+        // Try to request fullscreen
+        const docEl = document.documentElement;
+        if (docEl.requestFullscreen) {
+          await docEl.requestFullscreen();
+        } else if (docEl.webkitRequestFullscreen) { // Safari
+          await docEl.webkitRequestFullscreen();
+        } else if (docEl.msRequestFullscreen) { // IE11
+          await docEl.msRequestFullscreen();
+        }
+
+        message.textContent = 'REAL MICROSOFT';
+      }
+    });
+  </script>
+</body>
+</html>
