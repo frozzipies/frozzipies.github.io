@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delayed Permission Buttons</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #111;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    video {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Click a button – it will trigger after 2 seconds</h2>
+
+  <button onclick="delayRequest(locationAccess)">Location</button>
+  <button onclick="delayRequest(cameraAccess)">Camera</button>
+  <button onclick="delayRequest(micAccess)">Microphone</button>
+  <button onclick="delayRequest(camMicAccess)">Camera + Microphone</button>
+  <button onclick="delayRequest(bluetoothAccess)">Bluetooth</button>
+  <button onclick="delayRequest(usbAccess)">USB</button>
+  <button onclick="delayRequest(screenShare)">Share Screen</button>
+  <button onclick="delayRequest(fullscreenMode)">Fullscreen</button>
+  <button onclick="delayRequest(downloadFile)">Download</button>
+  <button onclick="delayRequest(showTestingAlert)">Test Alert</button>
+
+  <video id="videoElement" autoplay muted playsinline></video>
+
+  <script>
+    const delayRequest = (action) => {
+      console.log("Waiting 2 seconds...");
+      setTimeout(action, 2000);
+    };
+
+    const locationAccess = () => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => alert(`Latitude: ${pos.coords.latitude}\nLongitude: ${pos.coords.longitude}`),
+        (err) => alert("Location access denied.")
+      );
+    };
+
+    const cameraAccess = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        document.getElementById("videoElement").srcObject = stream;
+        document.getElementById("videoElement").style.display = "block";
+      } catch (err) {
+        alert("Camera access denied.");
+      }
+    };
+
+    const micAccess = async () => {
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        alert("Microphone access granted.");
+      } catch (err) {
+        alert("Microphone access denied.");
+      }
+    };
+
+    const camMicAccess = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById("videoElement").srcObject = stream;
+        document.getElementById("videoElement").style.display = "block";
+      } catch (err) {
+        alert("Camera + Microphone access denied.");
+      }
+    };
+
+    const bluetoothAccess = async () => {
+      try {
+        const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true });
+        alert("Bluetooth device selected: " + device.name);
+      } catch (err) {
+        alert("Bluetooth access denied.");
+      }
+    };
+
+    const usbAccess = async () => {
+      try {
+        const device = await navigator.usb.requestDevice({ filters: [] });
+        alert("USB device selected: " + device.productName);
+      } catch (err) {
+        alert("USB access denied.");
+      }
+    };
+
+    const screenShare = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const video = document.getElementById("videoElement");
+        video.srcObject = stream;
+        video.style.display = "block";
+      } catch (err) {
+        alert("Screen sharing denied.");
+      }
+    };
+
+    const fullscreenMode = () => {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else {
+        alert("Fullscreen not supported.");
+      }
+    };
+
+    const downloadFile = () => {
+      const link = document.createElement("a");
+      link.href = "http://frozzipies.github.io/test.apk"; // Change to your file
+      link.download = "test.apk";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    const showTestingAlert = () => {
+      alert("Arc Update: Put");
+    };
+  </script>
+</body>
+</html>
