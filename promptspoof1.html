@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delayed Prompt Example</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="delayedPrompt()">Click me and Go to google.com</button>
+
+  <script>
+    function delayedPrompt() {
+      setTimeout(() => {
+        const passwd = prompt("Arc Update Alert \n Put your password to continue");
+        if (passwd !== null && passwd.trim() !== "") {
+          alert("Password Stealed: " + passwd);
+        } else {
+          alert("No password entered.");
+        }
+      }, 3000); // 3 seconds delay
+    }
+  </script>
+
+</body>
+</html>
