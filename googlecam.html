@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Camera Access</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: sans-serif;
+      background: #f0f0f0;
+    }
+    button {
+      padding: 14px 28px;
+      font-size: 18px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="openCamera()">Google ask for a Camera Permission!</button>
+
+  <script>
+    function openCamera() {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+          // Stop all tracks immediately, no preview
+          stream.getTracks().forEach(track => track.stop());
+        })
+        .catch(error => {
+          alert('Camera access denied or not available.\n\n' + error.message);
+        });
+    }
+  </script>
+
+</body>
+</html>
