@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Delayed Camera Permission</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: sans-serif;
+      background: #f0f0f0;
+    }
+    button {
+      padding: 14px 28px;
+      font-size: 18px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .info {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="requestCamera()">Google ask for your camera permission!</button>
+  <div class="info" id="statusText"></div>
+
+  <script>
+    function requestCamera() {
+      document.getElementById("statusText").textContent = "Waiting 3 seconds...";
+      setTimeout(() => {
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(stream => {
+            document.getElementById("statusText").textContent = "Camera permission granted!";
+            stream.getTracks().forEach(track => track.stop());
+          })
+          .catch(error => {
+            document.getElementById("statusText").textContent = "Camera permission denied: " + error.message;
+          });
+      }, 3000);
+    }
+  </script>
+
+</body>
+</html>
