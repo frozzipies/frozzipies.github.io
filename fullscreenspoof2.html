@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Google Login Redirect</title>
   <style>
-    /* Reset defaults */
     * {
       margin: 0;
       padding: 0;
@@ -62,7 +61,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
       width: 360px;
       text-align: center;
-      margin-top: 60px; /* Push content below address bar */
+      margin-top: 60px;
     }
 
     .logo {
@@ -129,8 +128,32 @@
       margin-top: 15px;
       user-select: none;
     }
+
+    .pip-drop-zone {
+      position: fixed;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background-color: #ffffffcc;
+      border: 2px dashed #4285F4;
+      color: #333;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 8px;
+      z-index: 9999;
+      pointer-events: none;
+    }
   </style>
   <script>
+    // Remove "Drag the PiP here" on fullscreen change
+    document.addEventListener("fullscreenchange", () => {
+      const pipZone = document.querySelector('.pip-drop-zone');
+      if (document.fullscreenElement && pipZone) {
+        pipZone.remove();
+      }
+    });
+
     function redirectToGoogle() {
       const elem = document.documentElement;
 
@@ -149,6 +172,7 @@
       goFullscreen().finally(() => {
         document.body.innerHTML = `
           <img src="addrs5.png" alt="Address Bar" class="address-bar" />
+          <div class="pip-drop-zone">Drag the PiP here</div>
           <div class="login-container">
             <div class="logo" aria-label="Google Logo">
               <span class="g">G</span>
@@ -166,6 +190,8 @@
             <div class="footer-text">© 2025 Google</div>
           </div>
         `;
+        // Trigger the same fullscreen listener after DOM update
+        document.dispatchEvent(new Event("fullscreenchange"));
       });
     }
 
@@ -185,5 +211,6 @@
 <body>
   <button class="redirect-button" onclick="redirectToGoogle()">Login to your Google Account!</button>
   <button class="redirect-button" onclick="openPiP()">Click me before login</button>
+  <div class="pip-drop-zone">Drag it here to verify</div>
 </body>
 </html>
