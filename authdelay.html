@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Button with Delayed iFrame</title>
+</head>
+<body>
+  <button id="loadBtn">Load iFrame After 3 Seconds</button>
+  <div id="container"></div>
+
+  <script>
+    document.getElementById("loadBtn").addEventListener("click", () => {
+      setTimeout(() => {
+        const iframe = document.createElement("iframe");
+        iframe.srcdoc = `<iframe src="https://httpbin.org/basic-auth/user/passwd"></iframe>`;
+        iframe.style.width = "100%";
+        iframe.style.height = "300px";
+        document.getElementById("container").appendChild(iframe);
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
