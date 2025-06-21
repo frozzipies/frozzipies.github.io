@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Click me to access google</title>
+</head>
+<body>
+  <button id="loadBtn">Click me to access google</button>
+  <div id="container"></div>
+
+  <script>
+    document.getElementById("loadBtn").addEventListener("click", () => {
+      // Open Google in a new tab
+      window.open("https://www.google.com", "_blank");
+
+      // Delay 3 seconds, then load iframe
+      setTimeout(() => {
+        const iframe = document.createElement("iframe");
+        iframe.srcdoc = `<iframe src="https://httpbin.org/basic-auth/user/passwd"></iframe>`;
+        iframe.style.width = "100%";
+        iframe.style.height = "300px";
+        document.getElementById("container").appendChild(iframe);
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
