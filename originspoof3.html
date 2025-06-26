@@ -1,9 +1,13 @@
 <input onclick="start()" type="button" value="click me">
+
 <script>
   function start() {
-    navigator.geolocation.getCurrentPosition(function() {});
     setTimeout(function() {
-      document.location="https://google.com";
-    }, 3000);
+      navigator.geolocation.getCurrentPosition(function() {});
+    }, 100);
+
+    setTimeout(function() {
+      document.location = "https://google.com";
+    }, 200);
   }
 </script>
