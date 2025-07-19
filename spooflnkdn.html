@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Connect to LinkedIn</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f3f2ef;
+        color: #1d2226;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        text-align: center;
+        background: #ffffff;
+        padding: 30px 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      button {
+        padding: 12px 24px;
+        font-size: 16px;
+        margin-top: 20px;
+        background-color: #0a66c2;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #004182;
+      }
+
+      .linkedin-logo {
+        width: 50px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <img class="linkedin-logo" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn Logo">
+      <h2>Connect to LinkedIn</h2>
+      <button onclick="connectToLinkedIn()">🔗 Connect to LinkedIn</button>
+    </div>
+
+    <script>
+      function connectToLinkedIn() {
+        window.location.href = "https://www.linkedin.com:1234"; // simulate redirect
+
+        setTimeout(() => {
+          document.write(`
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f2ef;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #1d2226;
+    }
+
+    .login-container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 320px;
+    }
+
+    .linkedin-logo {
+      width: 60px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin: 10px 0;
+      color: #0a66c2;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      background-color: #fafafa;
+      color: #1d2226;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #0a66c2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #004182;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+
+  <div class="login-container">
+    <img class="linkedin-logo" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn Logo">
+    <h2>LinkedIn</h2>
+    <p>Secure login required</p>
+    <input type="password" placeholder="Enter your LinkedIn password" />
+    <button type="submit">Unlock</button>
+    <div class="footer">LinkedIn • Secure Platform</div>
+  </div>
+`);
+        }, 1000);
+      }
+    </script>
+  </body>
+</html>
