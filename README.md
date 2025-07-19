@@ -1,4 +1,13 @@
-# frozzipies.github.io
+INSECURE URL SCHEME TEST BROWSER
 
-https://frozzipies.github.io/addrspoof.html
+SPOOF SLASH https:///
+https://frozzipies.github.io/spoofslash.html
+
+SPOOF FILE file://
+https://frozzipies.github.io/spooffile.html
+
+SPOOF HTTTPS htttps://
 https://frozzipies.github.io/spoofhtttps.html
+
+SPOOF RTL ARAB https://س
+https://frozzipies.github.io/spoofrtl.html
