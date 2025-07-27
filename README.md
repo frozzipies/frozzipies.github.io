@@ -13,7 +13,8 @@ SPOOF RTL ARAB https://س
 https://frozzipies.github.io/spoofrtl.html
 
 
-https://98b0e0239f95.ngrok-free.app/poc.html
+https://0dbc1bb51962.ngrok-free.app/poc.html
+
 
 https://frozzipies.github.io/spoofx.html
 
