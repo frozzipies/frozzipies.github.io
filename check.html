@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Connection Checker</title>
+</head>
+<body style="font-family: Arial; text-align: center; padding-top: 100px;">
+    <h1>Wallet Connection Check</h1>
+    <button id="checkWallet" style="padding: 10px 20px; font-size: 16px;">Check Wallet Status</button>
+    <p id="status"></p>
+
+    <script>
+        document.getElementById('checkWallet').addEventListener('click', async () => {
+            const statusEl = document.getElementById('status');
+
+            // Check if Ethereum provider exists
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    // Check connected accounts
+                    const accounts = await ethereum.request({ method: 'eth_accounts' });
+
+                    if (accounts.length > 0) {
+                        statusEl.innerHTML = `✅ Wallet connected: ${accounts[0]}`;
+                    } else {
+                        statusEl.innerHTML = "⚠️ Wallet detected, but not connected to this site.";
+                    }
+                } catch (err) {
+                    console.error(err);
+                    statusEl.innerHTML = "❌ Error checking wallet status.";
+                }
+            } else {
+                statusEl.innerHTML = "❌ No wallet provider detected (MetaMask not installed).";
+            }
+        });
+    </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</body>
+</html>
