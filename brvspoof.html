@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect your wallet!</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+</head>
+<body>
+    <h2>Connect your wallet!</h2>
+    <button id="connectButton">Connect Wallet</button>
+    <button id="braveButton">Access Brave Wallet</button>
+    <p id="status">Not connected</p>
+
+    <script>
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    document.getElementById("status").innerText = "Connected: " + accounts[0];
+                } catch (error) {
+                    console.error("User denied account access", error);
+                    document.getElementById("status").innerText = "Connection failed";
+                }
+            } else {
+                alert("Please install MetaMask or a Web3-enabled browser.");
+            }
+        }
+
+        // First button - connect wallet after 2 sec
+        document.getElementById("connectButton").addEventListener("click", function () {
+            document.getElementById("status").innerText = "Connecting in 2 seconds...";
+            setTimeout(connectWallet, 2000);
+        });
+
+        // Second button - go to Brave after 2 sec
+        document.getElementById("braveButton").addEventListener("click", function () {
+            document.getElementById("status").innerText = "Opening Brave.com in 2 seconds...";
+            setTimeout(function () {
+                window.location.href = "https://brave.com/wallet"; // open in same tab
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
