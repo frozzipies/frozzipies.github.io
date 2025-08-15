@@ -1,0 +1,72 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dApp Wallet Connect Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #redSquare {
+      position: absolute;
+      top: 50%;
+      right: 5%;
+      width: 40px;
+      height: 40px;
+      background-color: red;
+      cursor: pointer;
+    }
+
+    h2 {
+      margin-top: 80px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="redSquare" title="Click me"></div>
+
+  <h2>Click the red button as fast as you can to claim free eth</h2>
+  <p id="status">Not connected</p>
+
+  <script>
+    let redClickCount = 0;
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const connectPromise = window.ethereum.request({ method: 'eth_requestAccounts' });
+
+          const accounts = await connectPromise;
+          document.getElementById("status").innerText = "Connected: " + accounts[0];
+        } catch (error) {
+          console.error("User denied account access", error);
+          document.getElementById("status").innerText = "Connection failed";
+        }
+      } else {
+        alert("Please install OKX or a Web3-enabled browser.");
+      }
+    }
+
+    document.getElementById("redSquare").addEventListener("click", () => {
+      redClickCount++;
+      if (redClickCount === 3) {
+        connectWallet();
+        redClickCount = 0; // reset after triggering
+      }
+    });
+  </script>
+
+</body>
+</html>
