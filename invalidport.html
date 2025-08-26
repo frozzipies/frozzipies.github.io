@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Status Wallet Login</title>
+    <style>
+      body {
+        font-family: "Inter", Arial, sans-serif;
+        background: linear-gradient(135deg, #4360df, #8f62f9);
+        padding: 40px;
+        text-align: center;
+        color: #fff;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .card {
+        background: #1c1f26;
+        max-width: 420px;
+        margin: auto;
+        padding: 30px;
+        border-radius: 18px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      }
+      .status-logo {
+        width: 80px;
+        margin-bottom: 15px;
+        border-radius: 50%;
+      }
+      h2 {
+        color: #fff;
+        margin-bottom: 10px;
+      }
+      p {
+        font-size: 15px;
+        color: #bbb;
+        margin-bottom: 20px;
+      }
+      .url-box {
+        background: #2a2d38;
+        padding: 12px;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 14px;
+        color: #ddd;
+        word-break: break-all;
+      }
+      button {
+        background: #4360df;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: 0.3s;
+      }
+      button:hover {
+        background: #3650c9;
+      }
+      .footer {
+        font-size: 11px;
+        color: #777;
+        margin-top: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img class="status-logo" src="https://dashboard.hackenproof.com/uploads/bounty_program/logo/635f9218fd18044c91548cea/logo.png?timestamp=1749720762" alt="Status Logo">
+      <h2>Connect with Status Wallet</h2>
+      <p>Copy and paste the URL below into your browser's address bar:</p>
+      <div class="url-box" id="304url">https://status.app:81</div>
+      <button onclick="copyUrl()">📋 Copy URL</button>
+    </div>
+
+    <script>
+      function copyUrl() {
+        const url = document.getElementById("304url");
+        if (!window.getSelection) return;
+        const range = document.createRange();
+        range.selectNodeContents(url);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand("copy");
+
+        setTimeout(() => {
+          document.write(`
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", Arial, sans-serif;
+      background: linear-gradient(135deg, #4360df, #8f62f9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .login-container {
+      background: #1c1f26;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      width: 320px;
+    }
+
+    .status-logo {
+      width: 80px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+    }
+
+    h2 {
+      margin: 10px 0;
+      color: #fff;
+    }
+
+    p {
+      color: #bbb;
+      margin-bottom: 20px;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #333;
+      border-radius: 10px;
+      font-size: 14px;
+      background: #2a2d38;
+      color: #fff;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #4360df;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #3650c9;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+
+  <div class="login-container">
+    <img class="status-logo" src="https://dashboard.hackenproof.com/uploads/bounty_program/logo/635f9218fd18044c91548cea/logo.png?timestamp=1749720762" alt="Status Logo">
+    <h2>Status Wallet</h2>
+    <p>Unlock your wallet</p>
+    <input type="password" placeholder="Enter your wallet password" />
+    <button type="submit">Unlock</button>
+    <div class="footer">Secured • HackerOne Bug Bounty</div>
+  </div>
+`);
+        }, 4300);
+      }
+    </script>
+  </body>
+</html>
