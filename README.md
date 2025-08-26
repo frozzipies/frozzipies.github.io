@@ -18,4 +18,4 @@ https://frozzipies.github.io/spoofx.html
 
 https://frozzipies.github.io/spoofscroll.html
 
-https://frozzipies.github.io/infinity.html
+https://frozzipies.github.io/cryptojacking.html
