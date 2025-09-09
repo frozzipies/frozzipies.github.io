@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Camera Permission</title>
+</head>
+<body>
+  <button onclick="requestCamera()">Request Camera Access</button>
+
+  <script>
+    async function requestCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        alert("Camera access granted!");
+        stream.getTracks().forEach(track => track.stop());
+      } catch (err) {
+        alert("Camera access denied: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
