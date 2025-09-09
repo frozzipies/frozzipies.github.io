@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Save File Picker Demo</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      display: grid;
+      place-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      border-radius: .5rem;
+      border: none;
+      cursor: pointer;
+      background: #0078ff;
+      color: #fff;
+    }
+    button:hover {
+      background: #005fcc;
+    }
+  </style>
+</head>
+<body>
+  <button id="saveBtn">Download malicious.php</button>
+
+  <script>
+    async function saveFile() {
+      const dummyPhp = `<?php
+// Dummy malicious.php content
+// Generated at ${new Date().toISOString()}
+echo "This is a dummy PHP file.";
+?>`;
+
+      try {
+        // Ask user where to save the file
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'malicious.php',
+          types: [{
+            description: 'PHP File',
+            accept: { 'application/x-httpd-php': ['.php'] }
+          }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(dummyPhp);
+        await writable.close();
+        alert('File saved successfully.');
+      } catch (err) {
+        console.error('Save cancelled or failed:', err);
+      }
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', saveFile);
+  </script>
+</body>
+</html>
