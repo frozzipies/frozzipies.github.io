@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Download Page</title>
+  <style>
+    body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#f7f9fc}
+    button{padding:10px 20px;border-radius:8px;border:0;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+  </style>
+</head>
+<body>
+  <button id="downloadBtn">Download</button>
+
+  <script>
+    const base64Data = "VGhpcyBpcyBhIGR1bW15IERNRyBmaWxlIGZvciB0ZXN0aW5nLg==";
+
+    function base64ToUint8Array(base64) {
+      const raw = atob(base64);
+      const arr = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; ++i) arr[i] = raw.charCodeAt(i);
+      return arr;
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', function () {
+      const bytes = base64ToUint8Array(base64Data);
+      const blob = new Blob([bytes], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'duckduckgo_hd_photo_best_for_wallpaper_mac.jpg.dmg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+  </script>
+</body>
+</html>
