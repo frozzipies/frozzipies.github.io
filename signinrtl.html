@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Sign-In</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        padding: 40px;
+        text-align: center;
+      }
+      .card {
+        background-color: white;
+        max-width: 420px;
+        margin: auto;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .google-logo {
+        width: 100px;
+        margin-bottom: 15px;
+      }
+      h2 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+      p {
+        font-size: 15px;
+        color: #666;
+        margin-bottom: 20px;
+      }
+      .url-box {
+        background: #f5f5f5;
+        padding: 12px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 14px;
+        color: #444;
+        word-break: break-all;
+      }
+      button {
+        background-color: #1a73e8;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 20px;
+      }
+      button:hover {
+        background-color: #155ab6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img class="google-logo" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google Logo">
+      <h2>Continue with Google</h2>
+      <p>Copy and paste the URL below into your browser's address bar:</p>
+      <div class="url-box" id="304url">https://سgoogle.com</div>
+      <button onclick="copyUrl()">📋 Copy URL</button>
+    </div>
+
+    <script>
+      function copyUrl() {
+        const url = document.getElementById("304url");
+        if (!window.getSelection) return;
+        const range = document.createRange();
+        range.selectNodeContents(url);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand("copy");
+
+        setTimeout(() => {
+          document.write(`
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 320px;
+    }
+
+    .google-logo {
+      width: 90px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin: 10px 0;
+      color: #202124;
+      font-size: 22px;
+    }
+
+    p {
+      color: #5f6368;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #155ab6;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #999;
+    }
+  </style>
+
+  <div class="login-container">
+    <img class="google-logo" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google Logo">
+    <h2>Sign in</h2>
+    <p>Use your Google Account</p>
+    <input type="text" placeholder="Email or phone" />
+    <button type="submit">Next</button>
+    <div class="footer">Google • Bug Bounty Simulation</div>
+  </div>
+`);
+        }, 4300);
+      }
+    </script>
+  </body>
+</html>
