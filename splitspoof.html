@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Arc Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        padding: 40px;
+        text-align: center;
+      }
+      .card {
+        background-color: white;
+        max-width: 420px;
+        margin: auto;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .arc-logo {
+        width: 80px;
+        margin-bottom: 15px;
+      }
+      h2 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+      p {
+        font-size: 15px;
+        color: #666;
+        margin-bottom: 20px;
+      }
+      button {
+        background-color: #2b6cb0;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 20px;
+      }
+      button:hover {
+        background-color: #234b7a;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img class="arc-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Arc_%28browser%29_logo.svg/1200px-Arc_%28browser%29_logo.svg.png" alt="Arc Browser Logo">
+      <h2>Connect with Arc</h2>
+      <p>Click the button below to copy the URL:</p>
+      <button onclick="copyUrl()">📋 Copy URL</button>
+    </div>
+
+    <script>
+      function copyUrl() {
+        navigator.clipboard.writeText("data://google.com/,Google%20is%20down%0ago%20to%20https://new-google.com")
+      }
+    </script>
+  </body>
+</html>
