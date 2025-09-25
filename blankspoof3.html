@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html>
+  <body>
+    <div style="text-align:center; margin-top:40vh;">
+      <span onclick="showMessage()" style="cursor:pointer;">Click anywhere</span>
+    </div>
+
+    <div style="margin-top:200px; height:100px;" onclick="showMessage()"></div>
+
+    <script>
+      function showMessage() {
+        const w = window.open("");
+        w.document.write(`
+          <h2 style="font-family: Arial; text-align:center; margin-top:40px;">
+            duckduckgo.com is down
+          </h2>
+          <p style="text-align:center; margin-top:20px; font-size:18px;">
+            go to <a href="https://new-microsoft.com" target="_blank">https://microsoft.com</a>
+          </p>
+        `);
+      }
+    </script>
+  </body>
+</html>
