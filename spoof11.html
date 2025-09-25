@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fullscreen Demo</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: black;
+      color: white;
+      font-size: 2rem;
+      font-family: sans-serif;
+      cursor: pointer;
+    }
+
+    /* Fullscreen container */
+    #fullscreen-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      overflow: hidden;
+    }
+
+    /* Fake browser bar image */
+    #top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Text inside fullscreen */
+    #fullscreen-text {
+      position: absolute;
+      top: 100px; /* below fake address bar */
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-size: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="main-screen">click me anywhere</div>
+
+  <div id="fullscreen-container">
+    <img id="top-bar" src="https://raw.githubusercontent.com/frozzipies/frozzipies.github.io/refs/heads/main/bing3.jpeg" alt="Top Bar">
+    <div id="fullscreen-text">FAKE MICROSOFT (ADDRESS BAR SPOOF)</div>
+  </div>
+
+  <script>
+    document.body.addEventListener("click", () => {
+      document.getElementById("main-screen").style.display = "none";
+      const fsContainer = document.getElementById("fullscreen-container");
+      fsContainer.style.display = "block";
+
+      if (fsContainer.requestFullscreen) {
+        fsContainer.requestFullscreen();
+      } else if (fsContainer.webkitRequestFullscreen) {
+        fsContainer.webkitRequestFullscreen(); // Safari
+      } else if (fsContainer.msRequestFullscreen) {
+        fsContainer.msRequestFullscreen(); // IE11
+      }
+    });
+  </script>
+</body>
+</html>
