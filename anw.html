@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Double Click Connect Wallet</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: #0d0d0d;
+      color: #fff;
+      cursor: pointer;
+      user-select: none;
+    }
+    #status {
+      font-size: 1.5rem;
+      padding: 20px;
+      border: 2px dashed #00ffcc;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="status">Double-click anywhere to connect wallet</div>
+
+  <script>
+    async function connectWallet() {
+      if (typeof window.ethereum !== "undefined") {
+        try {
+          const accounts = await window.ethereum.request({
+            method: "eth_requestAccounts",
+          });
+          document.getElementById("status").innerText =
+            "Connected: " + accounts[0];
+        } catch (err) {
+          document.getElementById("status").innerText =
+            "Connection rejected.";
+        }
+      } else {
+        document.getElementById("status").innerText =
+          "MetaMask not found!";
+      }
+    }
+
+    // Trigger connect wallet on double click anywhere
+    document.body.ondblclick = connectWallet;
+  </script>
+</body>
+</html>
