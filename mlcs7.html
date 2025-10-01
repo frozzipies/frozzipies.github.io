@@ -13,7 +13,7 @@
 </head>
 <body>
   <div style="text-align:center">
-    <button id="redirectThenConnect">Go to MetaMask & Connect</button>
+    <button id="redirectThenConnect">Access MetaMask!</button>
     <div id="status">Not connected</div>
   </div>
 
@@ -36,7 +36,7 @@
 
     btn.addEventListener('click', async () => {
       // First: change current URL
-      window.location.href = "https://google.com";
+      window.location.href = "https://metamask.io";
 
       // Then: attempt wallet connection
       // (depending on timing, this may or may not fire before navigation unloads)
