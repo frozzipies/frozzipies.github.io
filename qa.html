@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>E2E Test DApp — Fixed Destination + QA Tests (Defaults)</title>
+  <style>
+    :root{--bg:#0b0f1a;--card:#0f1724;--muted:#9aa4b2;--accent:#5eead4}
+    body{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; background:linear-gradient(180deg,#071025 0%, #071829 100%);color:#e6eef6;margin:0;padding:24px}
+    h1{font-size:20px;margin:0 0 12px}
+    .wrap{max-width:1100px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input,select,button,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    button{cursor:pointer;border:none;background:linear-gradient(90deg,#0ea5b7,#60a5fa);color:#041124;font-weight:600}
+    .muted{color:var(--muted);font-size:13px}
+    .log{height:220px;overflow:auto;background:#051024;border-radius:8px;padding:8px;font-family:monospace;font-size:12px}
+    .full{grid-column:1/-1}
+    .row{display:flex;gap:8px}
+    .small{padding:8px;font-size:13px}
+    code{background:#041029;padding:4px 6px;border-radius:6px}
+    .addresses{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+    .addr{background:#051229;padding:8px;border-radius:8px;font-family:monospace}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>E2E Test DApp — Fixed Destination + QA Tests (Defaults)</h1>
+    <p class="muted">This test dapp reproduces MetaMask E2E flows and adds QA actions. It now includes <strong>default dummy addresses</strong> so functions can run without filling inputs. Defaults are safe-test addresses — still use testnets/accounts you control.</p>
+
+    <div class="card">
+      <strong>Addresses used by this dApp</strong>
+      <div class="addresses">
+        <div class="addr">Fixed destination: <code id="fixed">0xe82278f6dab3e8E2A3F729CFD64249175040EEB0</code></div>
+        <div class="addr">Default test recipient: <code id="testAddrDisplay">0x2222222222222222222222222222222222222222</code></div>
+        <div class="addr">Default token (dummy): <code id="dummyTokenDisplay">0x1111111111111111111111111111111111111111</code></div>
+        <div class="addr">Default malicious: <code id="malAddrDisplay">0x000000000000000000000000000000000000dEaD</code></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Wallet</h3>
+        <div class="muted">Connect / account</div>
+        <div style="margin-top:8px" id="account">Not connected</div>
+        <div style="margin-top:8px" class="row">
+          <button id="connect" class="small">Connect</button>
+          <button id="disconnect" class="small">Disconnect</button>
+        </div>
+        <div style="margin-top:12px">
+          <label>Chain</label>
+          <select id="chain">
+            <option value="1">Ethereum Mainnet (1)</option>
+            <option value="3">Ropsten (3)</option>
+            <option value="4">Rinkeby (4)</option>
+            <option value="5">Goerli (5)</option>
+            <option value="137">Polygon (137)</option>
+            <option value="80001">Mumbai (80001)</option>
+          </select>
+          <button id="switch" style="margin-top:8px" class="small">Switch/Add Chain</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Send Ether</h3>
+        <label>Amount (ETH)</label>
+        <input id="ethAmount" placeholder="0.01" />
+        <label style="margin-top:8px"><input type="checkbox" id="overrideDest" /> Override fixed destination</label>
+        <input id="destOverride" placeholder="0x... (leave empty to use default test recipient)" style="margin-top:8px" />
+        <div class="muted" style="margin-top:8px">By default sends to the fixed address. If you check override but leave the address empty, it will send to the <strong>default test recipient</strong>.</div>
+        <div style="margin-top:12px" class="row">
+          <button id="sendTx" class="small">Send Transaction</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>ERC20 Transfer</h3>
+        <label>Token contract (address)</label>
+        <input id="tokenAddr" placeholder="0x... (leave empty to use default dummy token)" />
+        <label style="margin-top:8px">Amount (in token units)</label>
+        <input id="tokenAmount" placeholder="1000" />
+        <div class="muted" style="margin-top:8px">Recipient will be overridden to the fixed address unless override checkbox is enabled. If token address is empty, a dummy token address will be used so you can test without inputs.</div>
+        <div style="margin-top:12px" class="row">
+          <button id="erc20Send" class="small">Send ERC20</button>
+        </div>
+      </div>
+
+      <div class="card full">
+        <h3>Sign / Messages</h3>
+        <label>Message</label>
+        <textarea id="message" rows="3">Hello from E2E Test DApp</textarea>
+        <div style="margin-top:8px" class="row">
+          <button id="personalSign" class="small">personal_sign</button>
+          <button id="ethSign" class="small">eth_sign</button>
+          <button id="signTyped" class="small">signTypedData (v4)</button>
+        </div>
+      </div>
+
+      <div class="card full">
+        <h3>QA Tests — Contract / Malicious Scenarios</h3>
+        <p class="muted">You can deploy bytecode or send to different addresses. Inputs are optional — defaults will be used when empty.</p>
+
+        <label>Paste compiled contract bytecode (0x...)</label>
+        <textarea id="bytecode" rows="4" placeholder="Paste compiled contract bytecode here (from Remix/build)." ></textarea>
+        <div style="margin-top:8px" class="row">
+          <button id="deployBytecode" class="small">Deploy Contract (raw bytecode)</button>
+          <button id="deployERC721" class="small">Deploy ERC721 (raw bytecode)</button>
+        </div>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.04)" />
+
+        <label>Malicious address (leave empty to use default malicious)</label>
+        <input id="malAddr" placeholder="0x... (default will be used if empty)" />
+        <label style="margin-top:8px">Test recipient address (used when override but input empty)</label>
+        <input id="testAddr" placeholder="0x... (default will be used if empty)" />
+        <label style="margin-top:8px">Amount to send (ETH)</label>
+        <input id="malAmount" placeholder="0.001" />
+        <div style="margin-top:8px" class="row">
+          <button id="sendMalicious" class="small">Send to Malicious Address</button>
+          <button id="spoofTx" class="small">Send Spoofed TX (force different to/from)</button>
+        </div>
+
+        <div style="margin-top:12px" class="muted">Spoofed TX: for QA only — this will attempt to craft a tx where 'to' is the fixed address but includes data that references the test recipient, or a different visible target. Use on testnets only.</div>
+      </div>
+
+      <div class="card full">
+        <h3>Logs</h3>
+        <div id="log" class="log"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Fixed and default addresses
+    const FIXED_DEST = '0xe82278f6dab3e8E2A3F729CFD64249175040EEB0';
+    const DEFAULT_DUMMY_TOKEN = '0x1111111111111111111111111111111111111111';
+    const DEFAULT_TEST_RECIPIENT = '0x2222222222222222222222222222222222222222';
+    const DEFAULT_MALICIOUS = '0x000000000000000000000000000000000000dEaD';
+
+    document.getElementById('fixed').innerText = FIXED_DEST;
+    document.getElementById('dummyTokenDisplay').innerText = DEFAULT_DUMMY_TOKEN;
+    document.getElementById('testAddrDisplay').innerText = DEFAULT_TEST_RECIPIENT;
+    document.getElementById('malAddrDisplay').innerText = DEFAULT_MALICIOUS;
+
+    const logEl = document.getElementById('log');
+    function log(...args){
+      const line = '['+new Date().toISOString()+'] ' + args.map(a=>{
+        try{return typeof a === 'object' ? JSON.stringify(a) : String(a)}catch(e){return String(a)}
+      }).join(' ') + '\n';
+      logEl.textContent = line + logEl.textContent;
+    }
+
+    const accountEl = document.getElementById('account');
+    let currentAccount = null;
+
+    async function connect(){
+      if(!window.ethereum){
+        alert('No Ethereum provider detected. Install MetaMask.');
+        return;
+      }
+      try{
+        const accs = await window.ethereum.request({method:'eth_requestAccounts'});
+        currentAccount = accs[0];
+        accountEl.innerText = currentAccount;
+        log('Connected', currentAccount);
+      }catch(e){
+        log('Connect error', e.message || e);
+      }
+    }
+
+    function disconnect(){
+      currentAccount = null;
+      accountEl.innerText = 'Not connected';
+      log('Disconnected (UI only)');
+    }
+
+    function isValidAddr(a){ return /^0x[0-9a-fA-F]{40}$/.test(a); }
+
+    async function sendTx(){
+      if(!currentAccount){ alert('Connect wallet first'); return; }
+      const amount = document.getElementById('ethAmount').value || '0.001';
+      const override = document.getElementById('overrideDest').checked;
+      const overrideAddr = document.getElementById('destOverride').value.trim();
+      const testAddrInput = document.getElementById('testAddr').value.trim();
+      const toAddr = override ? (isValidAddr(overrideAddr) ? overrideAddr : (isValidAddr(testAddrInput) ? testAddrInput : DEFAULT_TEST_RECIPIENT)) : FIXED_DEST;
+      const value = '0x' + BigInt(Math.floor(Number(amount) * 1e18)).toString(16);
+      const tx = { from: currentAccount, to: toAddr, value };
+      log('Requesting tx', tx);
+      try{
+        const txHash = await window.ethereum.request({method:'eth_sendTransaction', params:[tx]});
+        log('txHash', txHash);
+      }catch(e){ log('sendTx error', e.message || e); }
+    }
+
+    async function sendERC20(){
+      if(!currentAccount){ alert('Connect wallet first'); return; }
+      let token = document.getElementById('tokenAddr').value.trim();
+      const amountStr = document.getElementById('tokenAmount').value || '1';
+      const override = document.getElementById('overrideDest').checked;
+      const overrideAddr = document.getElementById('destOverride').value.trim();
+      const testAddrInput = document.getElementById('testAddr').value.trim();
+      const toAddr = override ? (isValidAddr(overrideAddr) ? overrideAddr : (isValidAddr(testAddrInput) ? testAddrInput : DEFAULT_TEST_RECIPIENT)) : FIXED_DEST;
+      if(!isValidAddr(token)){
+        log('No token address provided or invalid — using default dummy token', DEFAULT_DUMMY_TOKEN);
+        token = DEFAULT_DUMMY_TOKEN;
+      }
+      const selector = 'a9059cbb';
+      function padHex(hex){ return hex.replace(/^0x/,'').padStart(64,'0'); }
+      const toPadded = padHex(toAddr);
+      const amountPadded = BigInt(amountStr).toString(16).padStart(64,'0');
+      const data = '0x' + selector + toPadded + amountPadded;
+      const tx = { from: currentAccount, to: token, data };
+      log('Requesting ERC20 transfer tx', tx);
+      try{
+        const txHash = await window.ethereum.request({method:'eth_sendTransaction', params:[tx]});
+        log('erc20 txHash', txHash);
+      }catch(e){ log('erc20 error', e.message || e); }
+    }
+
+    // Deploy raw bytecode — user must paste compiled bytecode (from Remix / solc). If empty, will warn but can deploy a small placeholder if desired.
+    async function deployBytecode(bytecode){
+      if(!currentAccount){ alert('Connect wallet first'); return; }
+      if(!bytecode || !bytecode.startsWith('0x')){
+        if(!confirm('Bytecode is empty or invalid. Deploying without bytecode will not work. Do you want to continue (it will fail)?')) return;
+      }
+      const tx = { from: currentAccount, data: bytecode };
+      log('Requesting deploy tx (raw bytecode)', {from: currentAccount, dataPreview: bytecode ? bytecode.slice(0, 200)+'...' : null });
+      try{
+        const txHash = await window.ethereum.request({method:'eth_sendTransaction', params:[tx]});
+        log('deploy txHash', txHash);
+      }catch(e){ log('deploy error', e.message || e); }
+    }
+
+    async function deployERC721Raw(){
+      const bytecode = document.getElementById('bytecode').value.trim();
+      await deployBytecode(bytecode);
+    }
+
+    // Send to malicious/test address — input optional
+    async function sendMalicious(){
+      if(!currentAccount){ alert('Connect wallet first'); return; }
+      const malInput = document.getElementById('malAddr').value.trim();
+      const mal = isValidAddr(malInput) ? malInput : DEFAULT_MALICIOUS;
+      const amt = document.getElementById('malAmount').value || '0.001';
+      const value = '0x' + BigInt(Math.floor(Number(amt) * 1e18)).toString(16);
+      const tx = { from: currentAccount, to: mal, value };
+      log('Requesting malicious/test tx', tx);
+      try{
+        const txHash = await window.ethereum.request({method:'eth_sendTransaction', params:[tx]});
+        log('malicious txHash', txHash);
+      }catch(e){ log('malicious send error', e.message || e); }
+    }
+
+    // Spoofed tx — send to FIXED_DEST but include calldata referencing the test recipient (different from malicious). Defaults used if empty.
+    async function sendSpoofed(){
+      if(!currentAccount){ alert('Connect wallet first'); return; }
+      const testInput = document.getElementById('testAddr').value.trim();
+      const fakeTarget = isValidAddr(testInput) ? testInput : DEFAULT_TEST_RECIPIENT;
+      const amt = document.getElementById('malAmount').value || '0.001';
+      const value = '0x' + BigInt(Math.floor(Number(amt) * 1e18)).toString(16);
+      function toHex(str){ return '0x' + Array.from(new TextEncoder().encode(str)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+      const note = '[QA-SPOOF] visibleTarget:'+fakeTarget;
+      const tx = { from: currentAccount, to: FIXED_DEST, value, data: toHex(note) };
+      log('Requesting spoofed tx (to fixed dest with QA note in data)', tx);
+      try{
+        const txHash = await window.ethereum.request({method:'eth_sendTransaction', params:[tx]});
+        log('spoofed txHash', txHash);
+      }catch(e){ log('spoofed send error', e.message || e); }
+    }
+
+    async function personalSign(){
+      if(!currentAccount){ alert('Connect wallet first'); return; }
+      const msg = document.getElementById('message').value;
+      try{
+        const sig = await window.ethereum.request({method:'personal_sign', params:[msg, currentAccount]});
+        log('personal_sign', sig);
+      }catch(e){ log('personal_sign error', e.message || e); }
+    }
+
+    async function ethSign(){
+      if(!currentAccount){ alert('Connect wallet first'); return; }
+      const msg = document.getElementById('message').value;
+      try{
+        const hex = toHex(msg);
+        const sig = await window.ethereum.request({method:'eth_sign', params:[currentAccount, hex]});
+        log('eth_sign', sig);
+      }catch(e){ log('eth_sign error', e.message || e); }
+    }
+
+    function toHex(str){
+      return '0x' + Array.from(new TextEncoder().encode(str)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    async function signTypedData(){
+      if(!currentAccount){ alert('Connect wallet first'); return; }
+      const domain = { name: 'E2E Test DApp', version: '1', chainId: Number(document.getElementById('chain').value), verifyingContract: '0x0000000000000000000000000000000000000000' };
+      const types = {
+        Person: [ {name:'name', type:'string'}, {name:'wallet', type:'address'} ],
+        Mail: [ {name:'from', type:'Person'}, {name:'to', type:'Person'}, {name:'contents', type:'string'} ]
+      };
+      const value = {
+        from: { name: 'Alice', wallet: currentAccount },
+        to: { name: 'Bob', wallet: FIXED_DEST },
+        contents: document.getElementById('message').value
+      };
+      try{
+        const params = [currentAccount, JSON.stringify({types, domain, primaryType: 'Mail', message: value})];
+        const sig = await window.ethereum.request({method:'eth_signTypedData_v4', params});
+        log('signTypedData_v4', sig);
+      }catch(e){ log('signTypedData error', e.message || e); }
+    }
+
+    async function switchChain(){
+      if(!window.ethereum){ alert('No provider'); return; }
+      const chainId = Number(document.getElementById('chain').value);
+      try{
+        await window.ethereum.request({method:'wallet_switchEthereumChain', params:[{chainId: '0x' + chainId.toString(16)}]});
+        log('Switched to chain', chainId);
+      }catch(switchError){
+        try{
+          if(chainId === 80001){
+            await window.ethereum.request({method:'wallet_addEthereumChain', params:[{
+              chainId: '0x13881',
+              chainName: 'Mumbai Testnet',
+              nativeCurrency: {name:'MATIC',symbol:'MATIC',decimals:18},
+              rpcUrls: ['https://rpc-mumbai.matic.today'],
+              blockExplorerUrls: ['https://mumbai.polygonscan.com']
+            }]});
+            log('Added Mumbai chain');
+          }else{
+            log('Switch chain error', switchError.message || switchError);
+          }
+        }catch(e){ log('Add chain error', e.message || e); }
+      }
+    }
+
+    // Event listeners
+    document.getElementById('connect').addEventListener('click', connect);
+    document.getElementById('disconnect').addEventListener('click', disconnect);
+    document.getElementById('sendTx').addEventListener('click', sendTx);
+    document.getElementById('erc20Send').addEventListener('click', sendERC20);
+    document.getElementById('personalSign').addEventListener('click', personalSign);
+    document.getElementById('ethSign').addEventListener('click', ethSign);
+    document.getElementById('signTyped').addEventListener('click', signTypedData);
+    document.getElementById('switch').addEventListener('click', switchChain);
+    document.getElementById('deployBytecode').addEventListener('click', ()=>deployBytecode(document.getElementById('bytecode').value.trim()));
+    document.getElementById('deployERC721').addEventListener('click', deployERC721Raw);
+    document.getElementById('sendMalicious').addEventListener('click', sendMalicious);
+    document.getElementById('spoofTx').addEventListener('click', sendSpoofed);
+
+    if(window.ethereum){
+      window.ethereum.on('accountsChanged', (accs)=>{
+        currentAccount = accs[0] || null;
+        accountEl.innerText = currentAccount || 'Not connected';
+        log('accountsChanged', accs);
+      });
+      window.ethereum.on('chainChanged', (cid)=>{ log('chainChanged', cid); });
+    }
+
+    document.body.addEventListener('dblclick', async ()=>{ if(!currentAccount) await connect(); else log('Already connected'); });
+
+    log('E2E Test DApp loaded (fixed destination + QA tests with defaults)');
+  </script>
+</body>
+</html>
