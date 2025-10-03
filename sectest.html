@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Web3 DApp Dialogs — Demo</title>
+<style>
+  :root{--bg:#0f1724;--card:#0b1220;--accent:#7c3aed;--muted:#94a3b8;--ok:#10b981;}
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+  body{background:linear-gradient(180deg,#071025 0%, #071425 100%);color:#e6eef8;padding:20px;}
+  .container{max-width:1100px;margin:0 auto;}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  h1{font-size:18px;margin:0}
+  .tabs{display:flex;gap:8px}
+  .tab{padding:8px 12px;border-radius:8px;background:#081227;border:1px solid rgba(255,255,255,0.04);cursor:pointer}
+  .tab.active{background:linear-gradient(90deg, rgba(124,58,237,0.14), rgba(56,189,248,0.06));border:1px solid rgba(124,58,237,0.35)}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:16px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.03)}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  input[type=text], textarea, select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+  .controls{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:center}
+  button{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .full{grid-column:1/-1}
+  .log{background:#020617;padding:12px;border-radius:8px;height:240px;overflow:auto;font-family:monospace;font-size:12px;color:#bcd;}
+  small.muted{color:var(--muted)}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  footer{font-size:12px;color:var(--muted);margin-top:12px}
+  .split{display:flex;gap:12px}
+  .left{flex:1}
+  .right{width:360px}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} .right{width:100%} .controls{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div>
+      <h1>Web3 DApp Dialogs — Interactive Demo</h1>
+      <small class="muted">Select a mode, connect your wallet, then trigger dialogs. All actions are performed via the wallet's RPC.</small>
+    </div>
+    <div class="tabs" role="tablist" aria-label="modes">
+      <button class="tab active" data-mode="normal">Normal</button>
+      <button class="tab" data-mode="testing">Malicious</button>
+      <button class="tab" data-mode="testing3">Empty</button>
+    </div>
+  </header>
+
+  <div class="split">
+    <div class="left">
+      <div class="card">
+        <div class="controls">
+          <div>
+            <label for="account">Connected account</label>
+            <input id="account" type="text" placeholder="Not connected" readonly />
+          </div>
+          <div>
+            <label for="chain">Chain ID</label>
+            <input id="chain" type="text" placeholder="—" readonly />
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="btn-connect">Connect Wallet</button>
+            <button id="btn-accounts" class="ghost">Get Accounts</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <label for="destination">Destination address (editable — uses selected mode by default)</label>
+        <input id="destination" type="text" />
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+          <small class="muted">Default addresses:</small>
+          <div style="display:flex;gap:8px;margin-left:8px">
+            <button class="ghost" data-set="normal">Normal</button>
+            <button class="ghost" data-set="testing">Testing</button>
+            <button class="ghost" data-set="testing3">Testing 3</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">Dialogs / RPC calls</h3>
+        <div class="grid">
+          <div>
+            <label>Wallet Access</label>
+            <div class="btn-row">
+              <button id="req-connect">eth_requestAccounts (connect)</button>
+              <button id="get-accounts" class="ghost">eth_accounts</button>
+              <button id="siwe" class="ghost">SIWE (personal_sign)</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Signing</label>
+            <div class="btn-row">
+              <button id="personal-sign">personal_sign</button>
+              <button id="eth-sign" class="ghost">eth_sign (raw)</button>
+              <button id="eth-sign-typed-v3" class="ghost">eth_signTypedData_v3</button>
+              <button id="eth-sign-typed-v4" class="ghost">eth_signTypedData_v4 (EIP-712)</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Transactions</label>
+            <div class="btn-row">
+              <button id="send-tx">eth_sendTransaction (transfer)</button>
+              <button id="contract-interact" class="ghost">Contract interaction</button>
+              <button id="estimate-gas" class="ghost">eth_estimateGas</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Token approvals & permits</label>
+            <div class="btn-row">
+              <button id="erc20-approve">ERC-20 Approve (approve)</button>
+              <button id="set-spend-cap" class="ghost">Set Spending Cap (approve limited)</button>
+              <button id="permit-eip2612" class="ghost">Permit (EIP-2612) - sign</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Token / NFT management</label>
+            <div class="btn-row">
+              <button id="add-token">wallet_watchAsset (add token)</button>
+              <button id="nft-mint" class="ghost">NFT Mint (simulate)</button>
+              <button id="nft-approve" class="ghost">NFT Approve</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Network / Security</label>
+            <div class="btn-row">
+              <button id="add-chain">wallet_addEthereumChain</button>
+              <button id="switch-chain" class="ghost">wallet_switchEthereumChain</button>
+              <button id="chain-id" class="ghost">eth_chainId</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Advanced & experimental</label>
+            <div class="btn-row">
+              <button id="meta-tx" class="ghost">MetaTx (sign for relayer)</button>
+              <button id="permit2" class="ghost">Permit2-like (example)</button>
+              <button id="batch-tx" class="ghost">Batch / Multicall example</button>
+            </div>
+          </div>
+
+          <div class="full">
+            <label>Encryption (wallet-specific)</label>
+            <div class="btn-row">
+              <button id="get-pubkey">eth_getEncryptionPublicKey</button>
+              <button id="decrypt" class="ghost">eth_decrypt</button>
+            </div>
+          </div>
+
+          <div class="full">
+            <label>Misc</label>
+            <div class="btn-row">
+              <button id="tx-receipt" class="ghost">eth_getTransactionReceipt (enter txHash below)</button>
+              <input id="txhash" type="text" placeholder="Transaction hash (optional)"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <label for="custom-data">Custom data (used in some signing examples)</label>
+        <textarea id="custom-data" rows="4">Hello from Web3 Dialogs Demo — timestamp: <!-- will be replaced --> </textarea>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="card">
+        <h3 style="margin-top:0">Live log</h3>
+        <div id="log" class="log"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="clear-log" class="ghost">Clear</button>
+          <button id="copy-log" class="ghost">Copy</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Notes</h4>
+        <small class="muted">This demo triggers the wallet's RPC methods. Behavior depends on wallet vendor & version. Some methods (encryption/decrypt, Permit2) are wallet-specific and may throw or be unsupported.</small>
+      </div>
+    </div>
+  </div>
+
+  <footer>Made for testing Web3 wallet dialogs • Be careful and only sign what you understand.</footer>
+</div>
+
+<script>
+/*
+  Web3 DApp Dialogs — Demo
+  - Uses window.ethereum.request where available.
+  - Default addresses for modes:
+    - Normal: 0x188b4e6367685147fDEfAD922609b6c915B7c6c7
+    - Testing: 0x5fbdb2315678afecb367f032d93f642f64180aa3
+    - Testing3: 0x00000000000000000000000000deface
+*/
+const DEFAULTS = {
+  normal: '0x188b4e6367685147fDEfAD922609b6c915B7c6c7',
+  testing: '0x5fbdb2315678afecb367f032d93f642f64180aa3',
+  testing3: '0x00000000000000000000000000deface'
+};
+
+const els = {
+  tabs: document.querySelectorAll('.tab'),
+  destination: document.getElementById('destination'),
+  account: document.getElementById('account'),
+  chain: document.getElementById('chain'),
+  btnConnect: document.getElementById('btn-connect'),
+  btnAccounts: document.getElementById('btn-accounts'),
+  log: document.getElementById('log'),
+  clearLog: document.getElementById('clear-log'),
+  copyLog: document.getElementById('copy-log'),
+  customData: document.getElementById('custom-data'),
+  txhash: document.getElementById('txhash')
+};
+
+let currentMode = 'normal';
+let currentAccount = null;
+let currentChain = null;
+
+function log(...args){
+  const line = '[' + new Date().toISOString() + '] ' + args.map(a => {
+    try { return (typeof a === 'string') ? a : JSON.stringify(a, null, 2); } catch(e){ return String(a); }
+  }).join(' ');
+  const pre = document.createElement('div');
+  pre.textContent = line;
+  els.log.prepend(pre);
+  console.log(...args);
+}
+
+function setMode(mode){
+  currentMode = mode;
+  els.tabs.forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  els.destination.value = DEFAULTS[mode];
+  log('Mode set to', mode, 'destination', DEFAULTS[mode]);
+}
+
+document.querySelectorAll('[data-set]').forEach(b => {
+  b.addEventListener('click', ()=> setMode(b.dataset.set));
+});
+
+els.tabs.forEach(t => t.addEventListener('click', ()=> setMode(t.dataset.mode)));
+setMode('normal');
+
+// helper: ensure ethereum
+function hasEthereum(){
+  if (!window.ethereum) {
+    log('No injected wallet detected (window.ethereum missing). Install MetaMask or another wallet.');
+    alert('No injected wallet detected. Install MetaMask or another injected wallet and reload.');
+    return false;
+  }
+  return true;
+}
+
+// Connect / get accounts
+async function connectWallet(){
+  if(!hasEthereum()) return;
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    currentAccount = accounts[0];
+    els.account.value = currentAccount;
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    currentChain = chainId;
+    els.chain.value = chainId;
+    log('Connected', currentAccount, 'chainId', chainId);
+  } catch (err) {
+    log('connectWallet error', err.message || err);
+  }
+}
+els.btnConnect.addEventListener('click', connectWallet);
+document.getElementById('req-connect').addEventListener('click', connectWallet);
+
+document.getElementById('get-accounts').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    log('eth_accounts ->', accounts);
+    if(accounts && accounts[0]) { currentAccount = accounts[0]; els.account.value = currentAccount; }
+  } catch(err){ log('eth_accounts error', err); }
+});
+
+els.btnAccounts.addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    log('eth_accounts ->', accounts);
+  } catch(err){ log('eth_accounts error', err); }
+});
+
+// signing: personal_sign
+document.getElementById('personal-sign').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!from) { log('No account connected'); alert('Connect wallet first'); return; }
+    const message = (els.customData.value || 'Hello from Web3 Dialogs Demo') + '\n\n' + new Date().toISOString();
+    // personal_sign expects [message, address]
+    const res = await window.ethereum.request({ method: 'personal_sign', params: [message, from] });
+    log('personal_sign signature', res);
+  } catch(err){ log('personal_sign error', err); }
+});
+
+// eth_sign (deprecated raw)
+document.getElementById('eth-sign').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!from) { log('No account connected'); alert('Connect wallet first'); return; }
+    const message = '0x' + Buffer.from('Raw eth_sign test').toString('hex');
+    const res = await window.ethereum.request({ method: 'eth_sign', params: [from, message] });
+    log('eth_sign ->', res);
+  } catch(err){ log('eth_sign error', err); }
+});
+
+// EIP-712 typed data v3/v4 (example)
+function buildEIP712Data(destination){
+  const domain = {
+    name: "Web3 Dialogs Demo",
+    version: "1",
+    chainId: parseInt(currentChain || '1', 16) || 1,
+    verifyingContract: destination
+  };
+  const types = {
+    Person: [
+      { name: "name", type: "string" },
+      { name: "wallet", type: "address" }
+    ],
+    Mail: [
+      { name: "from", type: "Person" },
+      { name: "to", type: "Person" },
+      { name: "contents", type: "string" }
+    ]
+  };
+  const message = {
+    from: { name: "Alice", wallet: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+    to: { name: "Bob", wallet: destination },
+    contents: "Hello, this is a typed data signature example"
+  };
+  return { domain, types, primaryType: "Mail", message };
+}
+
+document.getElementById('eth-sign-typed-v3').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!from) { alert('Connect first'); return; }
+    const destination = els.destination.value.trim();
+    const payload = buildEIP712Data(destination);
+    // eth_signTypedData_v3 expects params: [address, JSON.stringify(payload)]
+    const res = await window.ethereum.request({ method: 'eth_signTypedData_v3', params: [from, JSON.stringify(payload)] });
+    log('eth_signTypedData_v3 ->', res);
+  } catch(err){ log('eth_signTypedData_v3 error', err); }
+});
+
+document.getElementById('eth-sign-typed-v4').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!from) { alert('Connect first'); return; }
+    const destination = els.destination.value.trim();
+    const payload = buildEIP712Data(destination);
+    const res = await window.ethereum.request({ method: 'eth_signTypedData_v4', params: [from, JSON.stringify(payload)] });
+    log('eth_signTypedData_v4 ->', res);
+  } catch(err){ log('eth_signTypedData_v4 error', err); }
+});
+
+// SIWE (simple example using personal_sign)
+document.getElementById('siwe').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!from){ alert('Connect first'); return; }
+    const domain = window.location.hostname;
+    const statement = 'Sign in with Ethereum — Web3 Dialogs Demo';
+    const uri = window.location.origin;
+    const nonce = Math.random().toString(36).slice(2,10);
+    const siweMessage = `${domain} wants you to sign in with your Ethereum account:\n${from}\n\n${statement}\n\nURI: ${uri}\nNonce: ${nonce}\nIssued At: ${new Date().toISOString()}`;
+    const sig = await window.ethereum.request({ method: 'personal_sign', params: [siweMessage, from] });
+    log('SIWE signed', { message: siweMessage, signature: sig });
+  } catch(err){ log('SIWE error', err); }
+});
+
+// send transaction (transfer ETH)
+document.getElementById('send-tx').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!from){ alert('Connect first'); return; }
+    const to = els.destination.value.trim();
+    const txParams = {
+      from,
+      to,
+      value: '0x0', // zero ETH by default — wallet will still show a confirmation
+      data: '0x'
+    };
+    log('Sending eth_sendTransaction', txParams);
+    const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [txParams] });
+    log('eth_sendTransaction txHash', txHash);
+  } catch(err){ log('eth_sendTransaction error', err); }
+});
+
+// contract-interact (example: call transfer() on ERC20 — encoded)
+document.getElementById('contract-interact').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!from){ alert('Connect first'); return; }
+    const to = els.destination.value.trim();
+    // Example: ERC20 transfer ABI: transfer(address,uint256) -> method id + params
+    // We'll encode transfer(to, 1 token with 18 decimals) as a demonstration using a simple hand-encoded value (not using abi encoder).
+    // For safety, we just call a simple empty contract call (no-op) by placing destination in 'to' and dummy data.
+    const tx = { from, to, data: '0x' }; // calling empty fallback (if contract exists)
+    log('Contract interaction (simulated)', tx);
+    const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [tx] });
+    log('contract-interact txHash', txHash);
+  } catch(err){ log('contract-interact error', err); }
+});
+
+// estimate gas
+document.getElementById('estimate-gas').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    const to = els.destination.value.trim();
+    const tx = { from, to, value: '0x0', data: '0x' };
+    const estimate = await window.ethereum.request({ method: 'eth_estimateGas', params: [tx] });
+    log('eth_estimateGas ->', estimate);
+  } catch(err){ log('eth_estimateGas error', err); }
+});
+
+// ERC-20 approve (example using approve function signature — will need a real token address for proper demonstration)
+document.getElementById('erc20-approve').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    // This is a simulated approve: target is destination; token contract undefined here.
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!from){ alert('Connect first'); return; }
+    const spender = els.destination.value.trim();
+    // For demo purpose we won't encode full ERC20 approve because that requires token contract.
+    // Instead we show a tx to spender with data empty — wallet will prompt.
+    const tx = { from, to: spender, data: '0x' };
+    log('ERC20 approve (demo) tx', tx);
+    const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [tx] });
+    log('approve txHash', txHash);
+  } catch(err){ log('erc20 approve error', err); }
+});
+
+// set spending cap (approve limited)
+document.getElementById('set-spend-cap').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!from){ alert('Connect first'); return; }
+    const spender = els.destination.value.trim();
+    // Demo: set spending cap would call approve(spender, amount). We simulate with data empty.
+    const tx = { from, to: spender, data: '0x' };
+    log('Set spending cap (demo) tx', tx);
+    const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [tx] });
+    log('set-spend-cap txHash', txHash);
+  } catch(err){ log('set-spend-cap error', err); }
+});
+
+// Permit EIP-2612 (sign typed data v4 example)
+document.getElementById('permit-eip2612').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const owner = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!owner){ alert('Connect first'); return; }
+    const spender = els.destination.value.trim();
+    const value = '1000000000000000000'; // 1 token (18 decimals) sample
+    const nonce = 0;
+    const deadline = Math.floor(Date.now()/1000) + 3600;
+    const domain = {
+      name: 'MyToken', version: '1', chainId: parseInt(currentChain || '1', 16) || 1, verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC'
+    };
+    const types = {
+      Permit: [
+        {name: 'owner', type: 'address'},
+        {name: 'spender', type: 'address'},
+        {name: 'value', type: 'uint256'},
+        {name: 'nonce', type: 'uint256'},
+        {name: 'deadline', type: 'uint256'}
+      ]
+    };
+    const message = { owner, spender, value, nonce, deadline };
+    const payload = { domain, message, primaryType: 'Permit', types };
+    const sig = await window.ethereum.request({ method: 'eth_signTypedData_v4', params: [owner, JSON.stringify(payload)] });
+    log('Permit signature (EIP-2612) ->', sig);
+  } catch(err){ log('permit error', err); }
+});
+
+// wallet_watchAsset (add token)
+document.getElementById('add-token').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    // sample token data (not necessarily real)
+    const tokenAddress = els.destination.value.trim();
+    const tokenSymbol = 'DEMO';
+    const tokenDecimals = 18;
+    const image = ''; // optional
+    const wasAdded = await window.ethereum.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'ERC20',
+        options: { address: tokenAddress, symbol: tokenSymbol, decimals: tokenDecimals, image }
+      }
+    });
+    log('wallet_watchAsset ->', wasAdded);
+  } catch(err){ log('wallet_watchAsset error', err); }
+});
+
+// NFT mint (simulate)
+document.getElementById('nft-mint').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    const contract = els.destination.value.trim();
+    if(!from){ alert('Connect first'); return; }
+    // simulate mint call by sending tx to contract address
+    const tx = { from, to: contract, data: '0x' };
+    const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [tx] });
+    log('nft-mint txHash', txHash);
+  } catch(err){ log('nft-mint error', err); }
+});
+
+// nft approve (simulate)
+document.getElementById('nft-approve').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const owner = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!owner) { alert('Connect first'); return; }
+    const operator = els.destination.value.trim();
+    const tx = { from: owner, to: operator, data: '0x' }; // placeholder
+    const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [tx] });
+    log('nft-approve txHash', txHash);
+  } catch(err){ log('nft-approve error', err); }
+});
+
+// add network (wallet_addEthereumChain)
+document.getElementById('add-chain').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    // Example: Add Polygon (as sample)
+    const params = {
+      chainId: '0x89',
+      chainName: 'Polygon Mainnet',
+      rpcUrls: ['https://rpc-mainnet.maticvigil.com/'],
+      nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
+      blockExplorerUrls: ['https://polygonscan.com/']
+    };
+    const res = await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [params] });
+    log('wallet_addEthereumChain ->', res);
+  } catch(err){ log('wallet_addEthereumChain error', err); }
+});
+
+// switch chain
+document.getElementById('switch-chain').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    // Try switch to Polygon
+    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x89' }] });
+    const cid = await window.ethereum.request({ method: 'eth_chainId' });
+    els.chain.value = cid;
+    log('wallet_switchEthereumChain success, chainId', cid);
+  } catch(err){ log('wallet_switchEthereumChain error', err); }
+});
+
+// eth_chainId
+document.getElementById('chain-id').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const cid = await window.ethereum.request({ method: 'eth_chainId' });
+    els.chain.value = cid;
+    log('eth_chainId ->', cid);
+  } catch(err){ log('eth_chainId error', err); }
+});
+
+// MetaTx (sign message for relayer)
+document.getElementById('meta-tx').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const signer = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!signer){ alert('Connect first'); return; }
+    // Sample meta-tx payload (not a real relayer protocol) - sign typed data
+    const payload = {
+      domain: { name: 'MetaTxDemo', version: '1', chainId: parseInt(currentChain || '1', 16) || 1 },
+      types: { MetaTx: [{ name: 'to', type: 'address' }, { name: 'value', type: 'uint256' }, { name: 'data', type: 'bytes' }] },
+      primaryType: 'MetaTx',
+      message: { to: els.destination.value.trim(), value: '0', data: '0x' }
+    };
+    const sig = await window.ethereum.request({ method: 'eth_signTypedData_v4', params: [signer, JSON.stringify(payload)] });
+    log('meta-tx signature', sig);
+  } catch(err){ log('meta-tx error', err); }
+});
+
+// Permit2-like (conceptual example)
+document.getElementById('permit2').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const owner = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!owner){ alert('Connect first'); return; }
+    const payload = {
+      domain: { name: 'Permit2Demo', version: '1', chainId: parseInt(currentChain || '1', 16) || 1 },
+      types: { Permit2: [{ name: 'owner', type: 'address' }, { name: 'spender', type: 'address' }, { name: 'amount', type: 'uint256' }] },
+      primaryType: 'Permit2',
+      message: { owner, spender: els.destination.value.trim(), amount: '1000000000000000000' }
+    };
+    const sig = await window.ethereum.request({ method: 'eth_signTypedData_v4', params: [owner, JSON.stringify(payload)] });
+    log('Permit2-like signature', sig);
+  } catch(err){ log('permit2 error', err); }
+});
+
+// Batch tx (simulate multiple tx requests)
+document.getElementById('batch-tx').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const from = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!from){ alert('Connect first'); return; }
+    // Many wallets don't support a single batched JSON-RPC method; DApp typically presents multiple confirmations or uses multicall contract.
+    // We'll simulate by sending two zero-value txs sequentially (wallet will prompt for each).
+    const to = els.destination.value.trim();
+    const tx1 = { from, to, value: '0x0', data: '0x' };
+    const tx2 = { from, to, value: '0x0', data: '0x' };
+    log('Sending batch tx 1');
+    const hash1 = await window.ethereum.request({ method: 'eth_sendTransaction', params: [tx1] });
+    log('batch tx1', hash1);
+    log('Sending batch tx 2');
+    const hash2 = await window.ethereum.request({ method: 'eth_sendTransaction', params: [tx2] });
+    log('batch tx2', hash2);
+  } catch(err){ log('batch-tx error', err); }
+});
+
+// Encryption / Decryption (MetaMask experimental)
+document.getElementById('get-pubkey').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const account = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!account){ alert('Connect first'); return; }
+    const pubkey = await window.ethereum.request({ method: 'eth_getEncryptionPublicKey', params: [account] });
+    log('eth_getEncryptionPublicKey ->', pubkey);
+  } catch(err){ log('eth_getEncryptionPublicKey error', err); }
+});
+
+document.getElementById('decrypt').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const account = currentAccount || (await window.ethereum.request({ method: 'eth_accounts' }))[0];
+    if(!account){ alert('Connect first'); return; }
+    const cipherText = prompt('Paste cipher text to decrypt (base64/JSON):', '');
+    if(!cipherText) return;
+    const decrypted = await window.ethereum.request({ method: 'eth_decrypt', params: [cipherText, account] });
+    log('eth_decrypt ->', decrypted);
+  } catch(err){ log('eth_decrypt error', err); }
+});
+
+// getTransactionReceipt
+document.getElementById('tx-receipt').addEventListener('click', async ()=>{
+  if(!hasEthereum()) return;
+  try {
+    const txhash = els.txhash.value.trim();
+    if(!txhash){ alert('Enter txHash'); return; }
+    const res = await window.ethereum.request({ method: 'eth_getTransactionReceipt', params: [txhash] });
+    log('eth_getTransactionReceipt ->', res);
+  } catch(err){ log('eth_getTransactionReceipt error', err); }
+});
+
+// txhash input update logs
+els.txhash.addEventListener('change', ()=> log('txhash set to', els.txhash.value));
+
+// log control
+els.clearLog.addEventListener('click', ()=> els.log.innerHTML = '');
+els.copyLog.addEventListener('click', ()=>{
+  const text = els.log.innerText;
+  navigator.clipboard?.writeText(text).then(()=> alert('Copied log to clipboard')).catch(()=> alert('Copy failed'));
+});
+
+// populate custom data with timestamp
+els.customData.value = `Hello from Web3 Dialogs Demo — timestamp: ${new Date().toISOString()}`;
+
+// Listen to accounts/chain change events if wallet supports
+if(window.ethereum){
+  window.ethereum.on && window.ethereum.on('accountsChanged', (accounts)=> {
+    currentAccount = accounts[0];
+    els.account.value = currentAccount || '';
+    log('accountsChanged', accounts);
+  });
+  window.ethereum.on && window.ethereum.on('chainChanged', (chainId)=> {
+    currentChain = chainId;
+    els.chain.value = chainId;
+    log('chainChanged', chainId);
+  });
+}
+
+// small usability: ensure destination editable default
+els.destination.value = DEFAULTS.normal;
+</script>
+</body>
+</html>
