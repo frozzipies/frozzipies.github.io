@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Screen Share Mini Player</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --card: #121827;
+      --muted: #94a3b8;
+      --accent: #4f46e5;
+      --accent-2: #22c55e;
+      --danger: #ef4444;
+      --ring: #60a5fa44;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: radial-gradient(1200px 800px at 80% -10%, #1f2937 0%, var(--bg) 60%);
+      color: white;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    .wrap {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+    }
+    .newtab {
+      color: red;
+    }
+    .card {
+      max-width: 720px;
+      width: 100%;
+      background: linear-gradient(180deg, #0f172a 0%, var(--card) 100%);
+      border: 1px solid #1f2a44;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px #0006, inset 0 1px 0 #ffffff0f;
+      padding: 24px;
+    }
+    h1 {
+      font-size: clamp(1.25rem, 1rem + 1.2vw, 1.8rem);
+      margin: 0 0 8px;
+    }
+    p { color: var(--muted); margin-top: 0; }
+
+    .actions { display: flex; gap: .75rem; margin-top: 16px; flex-wrap: wrap; }
+    button {
+      appearance: none;
+      border: 0;
+      padding: .8rem 1rem;
+      border-radius: 12px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .02s ease, box-shadow .2s ease, background .2s ease;
+      box-shadow: 0 8px 18px #4f46e566;
+    }
+    button:hover { filter: brightness(1.05); }
+    button:active { transform: translateY(1px); }
+    button.secondary { background: #334155; box-shadow: 0 8px 18px #0004; }
+    button.danger { background: var(--danger); }
+
+    .note { font-size: .9rem; color: #a3b2c7; margin-top: 8px; }
+
+    /* Mini player */
+    .player {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 320px;
+      aspect-ratio: 16/10;
+      background: #0b1220;
+      border: 1px solid #1f2a44;
+      border-radius: 14px;
+      box-shadow: 0 12px 35px #0008, 0 0 0 4px transparent;
+      overflow: hidden;
+      display: none; /* shown when stream starts */
+      resize: both; /* allow user resizing */
+    }
+    .player.dragging { box-shadow: 0 0 0 4px var(--ring), 0 12px 35px #0008; }
+
+    .player video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #0b1220;
+    }
+
+    .player .bar {
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      gap: 8px;
+      background: linear-gradient(180deg, #0f172acc, #0f172a00);
+      backdrop-filter: blur(6px);
+    }
+    .bar .grab {
+      width: 100%;
+      height: 20px;
+      cursor: move;
+      -webkit-app-region: drag;
+      background: repeating-linear-gradient(90deg, #94a3b866 0 6px, transparent 6px 12px);
+      border-radius: 6px;
+    }
+    .bar button { padding: .45rem .6rem; border-radius: 8px; box-shadow: none; }
+    .bar .led { width: 10px; height: 10px; border-radius: 999px; background: var(--accent-2); box-shadow: 0 0 0 2px #0008; }
+
+    .error {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #3f1d1d;
+      color: #fecaca;
+      border: 1px solid #7f1d1d;
+      display: none;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Share your screen</h1>
+        <a href="https:/frozzipies.github.io/verifysite.html">Open me in new tab</a>
+      <p>Click the button to grant screen sharing permission. After approval, a draggable, resizable mini player will appear showing your shared screen. (Works best on HTTPS or <code>localhost</code>.)</p>
+      <div class="actions">
+        <button id="startBtn">Start screen share</button>
+        <button id="startAudioBtn" class="secondary" title="Include system audio when possible">Start with system audio</button>
+        <button id="stopBtn" class="danger" disabled>Stop</button>
+      </div>
+      <div class="note">Tip: Choose a window, tab, or entire screen in the picker. Some browsers may not allow system audio, or require choosing a tab.</div>
+      <div id="errorBox" class="error"></div>
+    </div>
+  </div>
+
+  <!-- Mini Player -->
+  <div id="player" class="player" aria-live="polite">
+    <div class="bar">
+      <div class="led" title="Streaming"></div>
+      <div class="grab" title="Drag to move"></div>
+      <button id="pauseBtn" class="secondary" aria-pressed="false">Pause</button>
+      <button id="stopBtnFloating" class="danger">Stop</button>
+    </div>
+    <video id="screenVideo" autoplay playsinline></video>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    const startAudioBtn = document.getElementById('startAudioBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const stopBtnFloating = document.getElementById('stopBtnFloating');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const errorBox = document.getElementById('errorBox');
+
+    const player = document.getElementById('player');
+    const videoEl = document.getElementById('screenVideo');
+
+    let stream = null;
+
+    function showError(err) {
+      errorBox.textContent = (err && (err.message || String(err))) || '';
+      errorBox.style.display = err ? 'block' : 'none';
+      console.error(err);
+    }
+
+    async function requestScreenShare(withAudio = false) {
+      showError();
+      try {
+        if (!('mediaDevices' in navigator) || !('getDisplayMedia' in navigator.mediaDevices)) {
+          throw new Error('Your browser does not support screen capture via getDisplayMedia. Try the latest Chrome, Edge, Firefox, or Safari.');
+        }
+
+        // Ask for display capture. Some browsers only allow audio when a tab is selected.
+        const constraints = withAudio ? { video: true, audio: true } : { video: true, audio: false };
+        stream = await navigator.mediaDevices.getDisplayMedia(constraints);
+
+        // If user canceled the picker, getDisplayMedia may reject or resolve with no tracks.
+        if (!stream || !stream.getVideoTracks().length) {
+          throw new Error('No screen selected.');
+        }
+
+        // Reflect stream in the mini player
+        videoEl.srcObject = stream;
+        player.style.display = 'block';
+        stopBtn.disabled = false;
+        pauseBtn.textContent = 'Pause';
+        pauseBtn.setAttribute('aria-pressed', 'false');
+
+        // When the user stops sharing from the browser UI, clean up.
+        const [vTrack] = stream.getVideoTracks();
+        vTrack.addEventListener('ended', () => {
+          stopSharing();
+        }, { once: true });
+
+        // Autoplay handling: play() may require interaction; our click fulfills that.
+        try { await videoEl.play(); } catch (e) { /* ignore */ }
+      } catch (err) {
+        // Most common: NotAllowedError (user denied), NotFoundError, AbortError
+        showError(err);
+      }
+    }
+
+    function stopSharing() {
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+      }
+      videoEl.srcObject = null;
+      player.style.display = 'none';
+      stopBtn.disabled = true;
+    }
+
+    // Pause/resume by enabling/disabling the video track
+    function togglePause() {
+      if (!stream) return;
+      const [vTrack] = stream.getVideoTracks();
+      if (!vTrack) return;
+      const paused = vTrack.enabled === false;
+      vTrack.enabled = !paused; // resume if paused
+      pauseBtn.textContent = vTrack.enabled ? 'Pause' : 'Resume';
+      pauseBtn.setAttribute('aria-pressed', String(!vTrack.enabled));
+    }
+
+    startBtn.addEventListener('click', () => requestScreenShare(false));
+    startAudioBtn.addEventListener('click', () => requestScreenShare(true));
+    stopBtn.addEventListener('click', stopSharing);
+    stopBtnFloating.addEventListener('click', stopSharing);
+    pauseBtn.addEventListener('click', togglePause);
+
+    // --- Drag to move mini player ---
+    (function enableDragging() {
+      const grab = player.querySelector('.grab');
+      let startX=0, startY=0, origX=0, origY=0, dragging=false;
+      const onDown = (e) => {
+        dragging = true;
+        player.classList.add('dragging');
+        startX = (e.touches ? e.touches[0].clientX : e.clientX);
+        startY = (e.touches ? e.touches[0].clientY : e.clientY);
+        const rect = player.getBoundingClientRect();
+        origX = rect.left; origY = rect.top;
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('mouseup', onUp);
+        window.addEventListener('touchend', onUp);
+        e.preventDefault();
+      };
+      const onMove = (e) => {
+        if (!dragging) return;
+        const x = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+        const y = (e.touches ? e.touches[0].clientY : e.clientY) - startY;
+        player.style.left = `${Math.max(8, Math.min(window.innerWidth - player.offsetWidth - 8, origX + x))}px`;
+        player.style.top  = `${Math.max(8, Math.min(window.innerHeight - player.offsetHeight - 8, origY + y))}px`;
+        player.style.right = 'auto';
+        player.style.bottom = 'auto';
+        e.preventDefault();
+      };
+      const onUp = () => {
+        dragging = false;
+        player.classList.remove('dragging');
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('touchmove', onMove);
+        window.removeEventListener('mouseup', onUp);
+        window.removeEventListener('touchend', onUp);
+      };
+      grab.addEventListener('mousedown', onDown);
+      grab.addEventListener('touchstart', onDown, { passive: false });
+    })();
+
+    // Guard: warn if not secure context
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+      showError('Screen capture requires a secure context. Please host this page on HTTPS or run via localhost.');
+    }
+  </script>
+</body>
+</html>
