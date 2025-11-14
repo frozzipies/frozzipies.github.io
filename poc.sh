@@ -1,2 +1,2 @@
 #!/bin/bash
-open -a Calculator
+open -a calculator.app
