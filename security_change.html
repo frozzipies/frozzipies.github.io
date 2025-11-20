@@ -1,0 +1,48 @@
+<h1 draggable="true" id="dragme">Drag 🔒 Lock To Address Bar</h1>
+
+<script>
+document.getElementById("dragme").addEventListener("dragstart", e => {
+  // Set drag data
+  e.dataTransfer.setData("text/uri-list", "text/plain");
+  e.dataTransfer.setData("text/plain", "chrome://settings/clearBrowserData");
+
+  // After 2 seconds, show the red box and message
+  setTimeout(() => {
+    document.body.innerHTML = `
+      <div id="closeBox" 
+        style="
+          position: fixed;
+          top: 73%;
+          right: 35%;
+          width: 30px;
+          height: 30px;
+          background: red;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 10px;
+          font-weight: bold;
+          cursor: pointer;
+          user-select: none;
+          border-radius: 6px;
+        ">
+        click
+      </div>
+
+      <h1>press the red button as fast as you can</h1>
+    `;
+
+    let clickCount = 0;
+
+    document.getElementById("closeBox").addEventListener("click", () => {
+      clickCount++;
+
+      if (clickCount >= 5) {
+        window.close(); // Works only if the tab was opened by JS
+      }
+    });
+
+  }, 2000);
+});
+</script>
