@@ -4,7 +4,7 @@
 document.getElementById("dragme").addEventListener("dragstart", e => {
   // Set drag data
   e.dataTransfer.setData("text/uri-list", "text/plain");
-  e.dataTransfer.setData("text/plain", "chrome://settings/security");
+  e.dataTransfer.setData("text/plain", "chrome://settings/clearBrowserData");
 
   // After 2 seconds, show the red box and message
   setTimeout(() => {
