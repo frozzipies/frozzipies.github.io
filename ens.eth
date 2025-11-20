@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Send ETH Instructions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      background: #eef2ff;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+    }
+
+    .card {
+      background: white;
+      padding: 28px;
+      width: 350px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .instructions {
+      text-align: left;
+      margin-bottom: 20px;
+      color: #374151;
+      font-size: 15px;
+      line-height: 1.5em;
+    }
+
+    button {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 14px 26px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background: #4338ca;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .status {
+      margin-top: 14px;
+      font-size: 14px;
+      color: #10b981;
+      height: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="instructions">
+      <strong>Instructions:</strong><br><br>
+      1. Copy the address<br>
+      2. Paste the address on the wallet and send <strong>0.00001 ETH</strong> to the MetaMask ENS Subname
+    </div>
+
+    <button id="copyBtn">Click Here to Copy</button>
+    <div class="status" id="statusMsg"></div>
+  </div>
+
+  <script>
+    const ENS_NAME = "smartcontractchainfrozzipiesii.metamask.eth.frozzipies.eth"; 
+    const button = document.getElementById("copyBtn");
+    const statusMsg = document.getElementById("statusMsg");
+
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(ENS_NAME);
+        statusMsg.textContent = "Copied!";
+      } catch (err) {
+        statusMsg.textContent = "Copy failed.";
+      }
+    });
+  </script>
+
+</body>
+</html>
