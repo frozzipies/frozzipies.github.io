@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+<style>
+html { font-family: sans-serif; }
+</style>
+</head>
+<body>
+
+<button onclick="openTestWindow()">Try Dia new features here!</button>
+
+<script>
+function openTestWindow() {
+  const pageString = "We encountered an error. Please go to https://new-dia.com";
+
+  window.open(
+  "javascript:'" + pageString + "'",
+  "_blank",
+  `width=${screen.width},height=${screen.height},left=0,top=0`
+);
+
+}
+</script>
+
+</body>
+</html>
