@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Browser Permission Playground</title>
+</head>
+
+<body>
+  <button onclick="openPopup()">Open Permission Popup</button>
+
+  <script>
+    function openPopup() {
+      const w = window.open("about:blank");
+
+      // --- Permission URLs (must be user-gesture activated) ---
+      const usb = "javascript: navigator.usb.requestDevice({filters: []});";
+      const hid = "javascript: navigator.hid.requestDevice({filters: []});";
+      const serial = "javascript: navigator.serial.requestPort({filters: []});";
+      const audio = "javascript: navigator.mediaDevices.getUserMedia({audio: true});";
+      const camera = "javascript: navigator.mediaDevices.getUserMedia({video: true});";
+      const screen = "javascript: navigator.mediaDevices.getDisplayMedia();";
+      const geo = `
+        javascript:
+        navigator.geolocation.getCurrentPosition(pos=>{
+          document.body.innerHTML += '<p>Lat: '+pos.coords.latitude+
+          ' Long: '+pos.coords.longitude+'</p>';
+        });
+      `;
+      const clipWrite = "javascript: navigator.clipboard.writeText('Hello from Frozzipies!');";
+      const clipRead = `
+        javascript:
+        navigator.clipboard.readText().then(txt=>{
+          document.body.innerHTML += '<p>Clipboard: '+txt+'</p>';
+        });
+      `;
+      const notify = `
+        javascript:
+        Notification.requestPermission().then(p=>{
+          document.body.innerHTML += '<p>Notification permission: '+p+'</p>';
+        });
+      `;
+      const vib = "javascript: navigator.vibrate([200,100,200]);";
+      const fullscreen = `
+        javascript:
+        document.documentElement.requestFullscreen();
+      `;
+      const bluetooth = `
+        javascript:
+        navigator.bluetooth.requestDevice({acceptAllDevices: true});
+      `;
+
+      const download = `
+        javascript:
+        (function(){
+          const a = document.createElement('a');
+          a.href = 'https://frozzipies.github.io/test.apk';
+          a.download = 'test.apk';
+          a.click();
+        })();
+      `;
+
+      const testPrompt = "javascript: prompt('Testing by Frozzipies');";
+
+
+// --- WebAuthn Attestation Test ---
+const webauthnCode = `
+(async () => {
+  try {
+    const publicKey = {
+      challenge: new Uint8Array([1,2,3,4,5,6]),
+      rp: { name: "Frozzipies Test RP" },
+      user: {
+        id: new Uint8Array([9,8,7,6,5,4]),
+        name: "frozzipies@test",
+        displayName: "Frozzipies"
+      },
+      pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+      attestation: "direct"
+    };
+
+    const cred = await navigator.credentials.create({ publicKey });
+    document.body.innerHTML += "<p>WebAuthn Success!</p>";
+  } catch (err) {
+    document.body.innerHTML += "<p>WebAuthn Error: " + err + "</p>";
+  }
+})();
+`;
+
+const webauthn = "javascript:" + encodeURIComponent(webauthnCode);
+
+
+      w.document.body.innerHTML = `
+        <h2>Browser Interaction Test Links</h2>
+
+        <a href="${usb}">WebUSB</a><br>
+        <a href="${hid}">WebHID</a><br>
+        <a href="${serial}">WebSerial</a><br>
+        <a href="${bluetooth}">WebBluetooth</a><br>
+
+        <a href="${audio}">Microphone Permission</a><br>
+        <a href="${camera}">Camera Permission</a><br>
+        <a href="${screen}">Screen Share</a><br>
+
+        <a href="${geo}">Geolocation</a><br>
+
+        <a href="${clipRead}">Clipboard Read</a><br>
+        <a href="${clipWrite}">Clipboard Write</a><br>
+
+        <a href="${notify}">Notification Request</a><br>
+        <a href="${vib}">Vibrate Device</a><br>
+
+        <a href="${fullscreen}">Fullscreen Mode</a><br>
+
+        <a href="${download}">Download Test APK</a><br>
+
+        <a href="${testPrompt}">Prompt “Testing by Frozzipies”</a><br>
+
+        <hr>
+
+        <a href="${webauthn}"><b>WebAuthn Attestation Test</b></a><br>
+      `;
+
+      w.focus();
+    }
+  </script>
+
+</body>
+</html>
