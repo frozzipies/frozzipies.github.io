@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Storage & File System Access API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    button {
+      padding: 12px 18px;
+      margin: 10px 0;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    pre {
+      background: #f3f3f3;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Storage & File System Access API - Origin Spoof via setTimeout</h1>
+
+  <button onclick="delay(openFile)">Open File (File System Access)</button><br>
+  <button onclick="delay(saveFile)">Save File (File System Access)</button><br>
+
+  <pre id="output"></pre>
+
+  <script>
+    const out = document.getElementById("output");
+    function log(msg) {
+      out.textContent += msg + "\n";
+    }
+
+    /* ---------------------------------------------
+       GLOBAL DELAY WRAPPER (2-second delay)
+    --------------------------------------------- */
+    function delay(fn) {
+      log("Waiting 2 seconds...");
+      setTimeout(() => {
+        fn();
+      }, 2000);
+    }
+
+    /* -----------------------------------------------------------
+       1. FILE SYSTEM ACCESS API — OPEN A FILE
+    ----------------------------------------------------------- */
+    async function openFile() {
+      try {
+        const [fileHandle] = await window.showOpenFilePicker();
+        const file = await fileHandle.getFile();
+        const text = await file.text();
+        log("Opened file: " + file.name);
+        log("Contents (first 100 chars): " + text.slice(0, 100));
+      } catch (err) {
+        log("Open file error: " + err.message);
+      }
+    }
+
+    /* -----------------------------------------------------------
+       2. FILE SYSTEM ACCESS API — SAVE A FILE
+    ----------------------------------------------------------- */
+    async function saveFile() {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: "fake_google.txt",
+          types: [{ accept: { "text/plain": [".txt"] } }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write("Hello! This text was saved using the File System Access API.");
+        await writable.close();
+
+        log("File saved successfully.");
+      } catch (err) {
+        log("Save file error: " + err.message);
+      }
+    }
+
+  </script>
+
+</body>
+</html>
