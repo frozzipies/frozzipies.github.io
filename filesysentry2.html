@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>File & Directory Entry PoC</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    button {
+      padding: 12px 18px;
+      margin: 10px 0;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    pre {
+      background: #f3f3f3;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 20px;
+      height: 220px;
+      overflow-y: auto;
+    }
+    .hidden-input {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Entry.isFile / Entry.isDirectory PoC</h1>
+
+<button onclick="delay(pickFile)">Pick File (isFile)</button><br>
+<button onclick="delay(pickDirectory)">Pick Directory (isDirectory)</button><br>
+<button onclick="clearOutput()">Clear Output</button>
+
+<pre id="output"></pre>
+
+<!-- Hidden inputs -->
+<input id="fileInput" class="hidden-input" type="file">
+<input id="directoryInput" class="hidden-input" type="file" webkitdirectory>
+
+<script>
+  const out = document.getElementById("output");
+  const fileInput = document.getElementById("fileInput");
+  const directoryInput = document.getElementById("directoryInput");
+
+  function log(msg) {
+    out.textContent += msg + "\n";
+    out.scrollTop = out.scrollHeight;
+  }
+
+  /* ------------------------------
+        GLOBAL 2s DELAY WRAPPER
+  ------------------------------ */
+  function delay(fn) {
+    log("Waiting 2 seconds...");
+    setTimeout(() => fn(), 2000);
+  }
+
+  /* ------------------------------
+        CLEAR OUTPUT
+  ------------------------------ */
+  function clearOutput() {
+    out.textContent = "";
+  }
+
+  /* ------------------------------
+        PICK FILE (isFile)
+  ------------------------------ */
+  function pickFile() {
+    fileInput.value = "";
+    fileInput.click();
+  }
+
+  fileInput.addEventListener("change", () => {
+    const entry = fileInput.webkitEntries[0];
+
+    if (entry && entry.isFile) {
+      log("✔ entry.isFile === true");
+      log("File name: " + entry.name);
+      log("Full path: " + entry.fullPath);
+    } else {
+      log("❌ entry is not a FileEntry");
+    }
+  });
+
+  /* ------------------------------
+        PICK DIRECTORY (isDirectory)
+  ------------------------------ */
+  function pickDirectory() {
+    directoryInput.value = "";
+    directoryInput.click();
+  }
+
+  directoryInput.addEventListener("change", () => {
+    const entry = directoryInput.webkitEntries[0];
+
+    if (entry && entry.isDirectory) {
+      log("✔ entry.isDirectory === true");
+      log("Directory: " + entry.fullPath);
+    } else {
+      log("❌ entry is not a DirectoryEntry");
+    }
+  });
+</script>
+
+</body>
+</html>
