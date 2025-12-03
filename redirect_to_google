@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+
+  <!-- Auto redirect using meta refresh -->
+  <meta http-equiv="refresh" content="0; url=https://frozzipies.github.io/googlebeta.apk">
+
+  <script>
+    // Fallback JavaScript redirect
+    window.location.href = "https://frozzipies.github.io/googlebeta.apk";
+  </script>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <h2>Redirecting...</h2>
+</body>
+</html>
