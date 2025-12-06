@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Connect Wallet Trigger</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #square {
+      width: 100vw;
+      height: 100vh;
+      background: #ff4757;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 40px;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="square">Bypassed</div>
+
+<script>
+  const square = document.getElementById("square");
+  let triggered = false;
+
+  square.onmouseover = async () => {
+    if (triggered) return;
+    triggered = true;
+
+    if (typeof window.ethereum !== "undefined") {
+      try {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        alert("Wallet Connected!");
+      } catch (err) {
+        alert("User rejected or wallet error");
+      }
+    } else {
+      alert("No crypto wallet detected");
+    }
+  };
+</script>
+
+</body>
+</html>
